@@ -15,4 +15,12 @@ public class Fluent extends Parameters {
     public String definitionToString() {
         return String.format("fluent %s;\n", this.toString());
     }
+    
+    public PowerFluent pow() {
+    	return new PowerFluent(this);
+    }
+    
+    public PermissionFluent perm() {
+    	return new PermissionFluent(this);
+    }
 }

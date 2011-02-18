@@ -4,7 +4,7 @@ import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public abstract class Parameters extends Atom {
+public abstract class Parameters extends Atom implements Cloneable {
 	ArrayList<Type> _parameters = new ArrayList<Type>();
 	ArrayList<String> _variables = null;
 	
@@ -76,10 +76,6 @@ public abstract class Parameters extends Atom {
             builder.append(delimiter).append(iter.next());
         }
         return builder.toString();
-    }
-    
-    public Parameters pow() {
-    	return this;
     }
     
     private String __join(String[] s, String deliminator) {

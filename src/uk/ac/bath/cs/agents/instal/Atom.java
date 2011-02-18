@@ -18,7 +18,7 @@ public abstract class Atom {
 	protected Atom(String name, int atom, int type) {
 		this._name = this._rope.build(name.toCharArray());
 		this._atom = atom;
-		this._type = atom;
+		this._type = type;
 	}
 	
 	public Rope getName() {

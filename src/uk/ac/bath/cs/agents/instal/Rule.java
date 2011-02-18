@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public abstract class Rule extends Conditional {
+	public static int TYPE_INITIATES = 2;
+	public static int TYPE_TERMINATES = 3;
+	public static int TYPE_GENERATES = 4;
+	
 	Event _sourceEvent;
 	String[] _sourceEventVariables;
 	

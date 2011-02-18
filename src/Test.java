@@ -59,6 +59,8 @@ public class Test {
 		// Violations
 		ViolationEvent misuse = new ViolationEvent("misuse");
 		
+		misuse.addParameter(handset);
+		
 		inst.event(clock)
 			.event(obtain)
 			.event(download)
@@ -132,11 +134,11 @@ public class Test {
 		  .condition(cbusy, "A", "T1")
 		  .condition(previous, "T1", "T2");
 		
-		i4.result(intObtain.pow(), "A", "X", "C")
+		i4.result(intObtain, "A", "X", "C")
 		  .condition(cbusy, "A1", "1")
 		  .condition(matchA, "A", "A1");
 		
-		i5.result(intObtain.pow(), "A", "X", "C")
+		i5.result(intObtain, "A", "X", "C")
 		  .condition(cbusy, "C1", "1")
 		  .condition(matchA, "C", "C1");
 		

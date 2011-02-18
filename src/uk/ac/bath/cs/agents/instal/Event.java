@@ -29,4 +29,8 @@ public abstract class Event extends Parameters {
 			return "";  
 		}
     }
+    
+    public ViolationEvent viol() {
+    	return new ViolationEvent(this);
+    }
 }
