@@ -25,18 +25,34 @@ public abstract class Parameters extends Atom {
 	
     public String toString() {
     	return String.format(
-    		"%s(%s)",
+    		"%s%s",
     		this._name.toString(),
-    		this._parametersToString()
+    		this._parametersWithParenthesisToString()
     	);
     }
     
     public String asVariablesToString(String[] variables) {
     	return String.format(
-    		"%s(%s)",
+    		"%s%s",
     		this._name.toString(),
-    		this._variablesToString(variables)
+    		this._variablesWithParenthesisToString(variables)
     	);
+    }
+    
+    protected String _parametersWithParenthesisToString() {
+    	if (this._parameters.size() > 0) {
+    		return String.format("(%s)", this._parametersToString());
+    	}
+    	
+    	return "";
+    }
+    
+    protected String _variablesWithParenthesisToString(String[] variables) {
+    	if (variables.length > 0) {
+    		return String.format("(%s)", this._variablesToString(variables));
+    	}
+    	
+    	return "";
     }
     
     public boolean hasVariables() {
