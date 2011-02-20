@@ -48,6 +48,16 @@ public abstract class Conditional extends Atom {
     	}
     }
     
+    public String[] getConditionsWithVariables() {
+        String[] atoms = new String[this._conditions.size()];
+        
+        for (int i = 0; i < this._conditions.size(); i++) {
+            atoms[i] = this._conditions.get(i).asVariablesToString(this._conditionsVariables.get(i));
+        }
+        
+        return atoms;
+    }
+    
     private String __join(AbstractCollection<Condition> s, AbstractCollection<String[]> v, String delimiter) {
         if (s == null || s.isEmpty()) return "";
         Iterator<Condition> iter = s.iterator();

@@ -35,6 +35,16 @@ public abstract class Rule extends Conditional {
 		return this.__join(this._resultAtoms, this._resultAtomVariables, ", ");
 	}
 	
+	public String[] getResultAtomsWithVariables() {
+	    String[] atoms = new String[this._resultAtoms.size()];
+	    
+	    for (int i = 0; i < this._resultAtoms.size(); i++) {
+	        atoms[i] = this._resultAtoms.get(i).asVariablesToString(this._resultAtomVariables.get(i));
+	    }
+	    
+	    return atoms;
+	}
+	
 	public String _getSourceEventWithVariables() {
 		return this._sourceEvent.asVariablesToString(this._sourceEventVariables);
 	}

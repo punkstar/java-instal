@@ -47,34 +47,38 @@ public class Institution {
 		this._terminates.add(t); return this;
 	}
 	
+	public String getName() {
+	    return this._name.toString();
+	}
+	
 	public Type[] getTypes() {
-		return (Type[]) this._types.toArray();
+		return this._types.toArray(new Type[] {});
 	}
 	
 	public Event[] getEvents() {
-		return (Event[]) this._events.toArray();
+		return this._events.toArray(new Event[] {});
 	}
 	
 	public Fluent[] getFluents() {
-		return (Fluent[]) this._fluents.toArray();
+		return this._fluents.toArray(new Fluent[] {});
 	}
 	
 	public Generates[] getGenerates() {
-		return (Generates[]) this._generates.toArray();
+		return this._generates.toArray(new Generates[] {});
 	}
 	
 	public Initiates[] getInitiates() {
-		return (Initiates[]) this._initiates.toArray();
+		return this._initiates.toArray(new Initiates[] {});
 	}
 	
 	public Terminates[] getTerminates() {
-		return (Terminates[]) this._terminates.toArray();
+		return this._terminates.toArray(new Terminates[] {});
 	}
 	
 	public String toString() {
 		String output = "";
 		
-		output += String.format("inst %s;\n\n", this._name.toString());
+		output += String.format("inst %s;\n\n", this.getName());
 		
 		Iterator<Type> iter_t = this._types.iterator();
 		while (iter_t.hasNext()) {

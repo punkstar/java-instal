@@ -24,4 +24,8 @@ public abstract class Atom {
 	public Rope getName() {
 		return this._name;
 	}
+	
+	public int getType() {
+	    return this._type;
+	}
 }

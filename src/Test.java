@@ -8,15 +8,14 @@ import uk.ac.bath.cs.agents.instal.NormativeEvent;
 import uk.ac.bath.cs.agents.instal.Terminates;
 import uk.ac.bath.cs.agents.instal.Type;
 import uk.ac.bath.cs.agents.instal.ViolationEvent;
+import uk.ac.bath.cs.agents.instal.asp.AnsProlog;
 
 public class Test {
 	public static void main(String[] args) {
 		Test t = new Test();
 	}
 	
-	public Test() {
-		this.__log("Starting..");
-		
+	public Test() {		
 		Institution inst = new Institution("grid", 10);
 		
 		/** TYPES **/
@@ -154,10 +153,16 @@ public class Test {
 		
 		inst.terminates(t1);
 		
+		this.__log("InstAL:");
 		System.out.println(inst.toString());
+		
+		this.__log("ASP:");
+		AnsProlog asp = new AnsProlog(inst);
+		asp.generate();
+		System.out.println(asp.toString());
 	}
 	
 	private void __log(String message) {
-		System.err.println(String.format("[log] %s", message));
+		System.out.println(String.format("*********** [log] %s", message));
 	}
 }
