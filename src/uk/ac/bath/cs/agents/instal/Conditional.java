@@ -22,24 +22,6 @@ public abstract class Conditional extends Atom {
 		return this.condition(true, f, params);
 	}
 	
-	protected class Condition {
-        protected boolean _condition;
-        protected Fluent _fluent;
-        
-        public Condition(boolean condition, Fluent f) {
-            this._condition = condition;
-            this._fluent = f;
-        }
-        
-        public String asVariablesToString(String[] variables) {
-        	return String.format(
-        		"%s%s",
-        		(this._condition) ? "" : "not ",
-        		this._fluent.asVariablesToString(variables)
-        	);
-        }
-	}
-	
     protected String _conditionsToString() {
     	if (this._conditions.size() > 0) {
             return "if " + this.__join(this._conditions, this._conditionsVariables, ", ");
@@ -52,20 +34,30 @@ public abstract class Conditional extends Atom {
         String[] atoms = new String[this._conditions.size()];
         
         for (int i = 0; i < this._conditions.size(); i++) {
-            atoms[i] = this._conditions.get(i).asVariablesToString(this._conditionsVariables.get(i));
+            atoms[i] = this._conditions.get(i).asVariablesToStringWithCondition(this._conditionsVariables.get(i));
         }
         
         return atoms;
+    }
+    
+    public Condition[] getConditions() {
+        Condition[] c = new Condition[this._conditions.size()];
+        
+        for (int i = 0; i < this._conditions.size(); i++) {
+            c[i] = this._conditions.get(i).setVariables(this._conditionsVariables.get(i));
+        }
+        
+        return c;
     }
     
     private String __join(AbstractCollection<Condition> s, AbstractCollection<String[]> v, String delimiter) {
         if (s == null || s.isEmpty()) return "";
         Iterator<Condition> iter = s.iterator();
         Iterator<String[]> iter_v = v.iterator();
-        StringBuilder builder = new StringBuilder(iter.next().asVariablesToString(iter_v.next()));
+        StringBuilder builder = new StringBuilder(iter.next().asVariablesToStringWithCondition(iter_v.next()));
         while( iter.hasNext() && iter_v.hasNext() )
         {
-            builder.append(delimiter).append(iter.next().asVariablesToString(iter_v.next()));
+            builder.append(delimiter).append(iter.next().asVariablesToStringWithCondition(iter_v.next()));
         }
         return builder.toString();
     }

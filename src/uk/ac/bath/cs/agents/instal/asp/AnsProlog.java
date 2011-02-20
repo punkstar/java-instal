@@ -2,6 +2,7 @@ package uk.ac.bath.cs.agents.instal.asp;
 
 import java.util.ArrayList;
 
+import uk.ac.bath.cs.agents.instal.Condition;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
@@ -150,7 +151,13 @@ public class AnsProlog extends InstalASPTranslator {
             StringBuilder conditions = new StringBuilder();
             
             for (int i = 0; i < r.getConditionsWithVariables().length; i++) {
-                conditions.append("holdsat(").append(r.getConditionsWithVariables()[i]).append(", I), ");
+               Condition c = r.getConditions()[i];
+               
+               if (c.isNegated()) {
+                   conditions.append("not ");
+               }
+               
+               conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
             }
             
             for (String s: r.getResultAtomsWithVariables()) {
