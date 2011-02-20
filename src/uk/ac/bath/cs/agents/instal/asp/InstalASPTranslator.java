@@ -20,6 +20,7 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateInitiateRules(Initiates[] rules);
     abstract protected Atom[] _generateTerminateRules(Terminates[] rules);
     abstract protected Atom[] _generateGenerateRules(Generates[] rules);
+    abstract protected Atom[] _generateTimeSteps(int timesteps);
     
 	public InstalASPTranslator(Institution instal_spec) {
 	    this._instal = instal_spec;
@@ -74,6 +75,12 @@ public abstract class InstalASPTranslator {
         this._addDivider();
         this._addComment("Generation rules..");
         for (Atom a: this._generateGenerateRules(this._instal.getGenerates())) {
+            this._addItem(a);
+        }
+        
+        this._addDivider();
+        this._addComment("Timesteps..");
+        for (Atom a: this._generateTimeSteps(this._instal.getTimeSteps())) {
             this._addItem(a);
         }
 	}

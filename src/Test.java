@@ -153,7 +153,7 @@ public class Test {
 		
 		inst.terminates(t1);
 		
-		inst.initially(cbusy.initially("A", "X"));
+		inst.initially(cbusy.initially("alice", "bob"));
 		
 		this.__log("InstAL:");
 		System.out.println(inst.toString());

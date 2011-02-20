@@ -84,6 +84,10 @@ public class Institution {
 	    return this._initially.toArray(new InitiallyFluent[] {});
 	}
 	
+	public int getTimeSteps() {
+	    return this._timeSteps;
+	}
+	
 	public String toString() {
 		String output = "";
 		

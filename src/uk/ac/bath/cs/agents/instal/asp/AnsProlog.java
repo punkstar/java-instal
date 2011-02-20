@@ -186,4 +186,17 @@ public class AnsProlog extends InstalASPTranslator {
         
         return atoms.toArray(new Atom[] {});
     }
+    
+    protected Atom[] _generateTimeSteps(int steps) {
+        Atom[] atoms = new Atom[steps*2+1];
+        
+        for (int i = 0; i < steps; i++) {
+            atoms[i*2] = new Blank(String.format("instant(i%02d).", i));
+            atoms[i*2+1] = new Blank(String.format("next(i%02d, i%02d).", i, i+1));
+        }
+        
+        atoms[steps*2] = new Blank(String.format("final(i%02d).", steps));
+            
+        return atoms;
+    }
 }
