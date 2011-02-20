@@ -23,6 +23,10 @@ public abstract class Parameters extends Atom implements Cloneable {
 		}
 	}
 	
+	public String[] getParameterVariables() {
+	    return this._variables.toArray(new String[] {});
+	}
+	
     public String toString() {
     	return String.format(
     		"%s%s",
@@ -35,7 +39,7 @@ public abstract class Parameters extends Atom implements Cloneable {
     	return String.format(
     		"%s%s",
     		this._name.toString(),
-    		this._variablesWithParenthesisToString(variables)
+    		this.getVariablesWithParenthesisToString(variables)
     	);
     }
     
@@ -47,7 +51,7 @@ public abstract class Parameters extends Atom implements Cloneable {
     	return "";
     }
     
-    protected String _variablesWithParenthesisToString(String[] variables) {
+    public String getVariablesWithParenthesisToString(String[] variables) {
     	if (variables.length > 0) {
     		return String.format("(%s)", this._variablesToString(variables));
     	}

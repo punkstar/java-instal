@@ -23,4 +23,8 @@ public class Fluent extends Parameters {
     public PermissionFluent perm() {
     	return new PermissionFluent(this);
     }
+    
+    public InitiallyFluent initially(String ... vars) {
+        return new InitiallyFluent(this, vars);
+    }
 }

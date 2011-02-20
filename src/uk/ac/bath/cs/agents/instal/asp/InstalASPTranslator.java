@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import uk.ac.bath.cs.agents.instal.Event;
-import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
+import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
 import uk.ac.bath.cs.agents.instal.Terminates;
@@ -15,7 +15,7 @@ public abstract class InstalASPTranslator {
     protected Institution _instal;
     
     abstract protected Atom _generateInstitutionName(String name);
-    abstract protected Atom[] _generateFluents(Fluent[] fluents);
+    abstract protected Atom[] _generateInitiallyFluents(InitiallyFluent[] fluents);
     abstract protected Atom[] _generateEvents(Event[] events);
     abstract protected Atom[] _generateInitiateRules(Initiates[] rules);
     abstract protected Atom[] _generateTerminateRules(Terminates[] rules);
@@ -34,6 +34,7 @@ public abstract class InstalASPTranslator {
 	}
 	
 	protected InstalASPTranslator _addDivider() {
+        this._addItem(new Newline());
 	    return this._addComment("% % % % % % % % % % % % % % % % % % % % % % % % % % % % % %");
 	}
 	
@@ -47,7 +48,9 @@ public abstract class InstalASPTranslator {
         
         this._addDivider();
         this._addComment("Initial fluents..");
-        this._addComment(" @TODO");
+        for(Atom a: this._generateInitiallyFluents(this._instal.getInitiallyFluents())) {
+            this._addItem(a);
+        }
         
         this._addDivider();
         this._addComment("Events..");

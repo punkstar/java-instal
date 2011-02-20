@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
+import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
 import uk.ac.bath.cs.agents.instal.Rule;
@@ -27,7 +28,7 @@ public class AnsProlog extends InstalASPTranslator {
 	    return new Blank(String.format("inst(%s).", name));
 	}
 	
-	protected Atom[] _generateFluents(Fluent[] fluents) {
+	protected Atom[] _generateInitiallyFluents(Fluent[] fluents) {
 	    Atom[] atoms = new Atom[fluents.length];
 	    
 	    for (int i = 0; i < fluents.length; i++) {
@@ -164,6 +165,16 @@ public class AnsProlog extends InstalASPTranslator {
                     ))
                 );
             }
+        }
+        
+        return atoms.toArray(new Atom[] {});
+    }
+    
+    protected Atom[] _generateInitiallyFluents(InitiallyFluent[] inits) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>(inits.length);
+        
+        for (InitiallyFluent i: inits) {
+            atoms.add(new Blank(String.format("ifluent(%s%s).", i.getName().toString(), i.getVariablesWithParenthesisToString(i.getParameterVariables()))));
         }
         
         return atoms.toArray(new Atom[] {});
