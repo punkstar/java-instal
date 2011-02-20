@@ -35,8 +35,11 @@ public abstract class InstalASPTranslator {
 	}
 	
 	protected InstalASPTranslator _addDivider() {
+	    String divider = "% % % % % % % % % % % % % % % % % % % % % % % % % % % % % %";
         this._addItem(new Newline());
-	    return this._addComment("% % % % % % % % % % % % % % % % % % % % % % % % % % % % % %");
+        this._addComment(divider);
+        this._addComment(divider);
+        return this;
 	}
 	
 	protected InstalASPTranslator _addItem(Atom a) {
@@ -49,12 +52,14 @@ public abstract class InstalASPTranslator {
         
         this._addDivider();
         this._addComment("Initial fluents..");
+        this._addComment();
         for(Atom a: this._generateInitiallyFluents(this._instal.getInitiallyFluents())) {
             this._addItem(a);
         }
         
         this._addDivider();
         this._addComment("Events..");
+        this._addComment();
         for(Atom a: this._generateEvents(this._instal.getEvents())) {
             this._addItem(a);
         }
@@ -80,6 +85,7 @@ public abstract class InstalASPTranslator {
         
         this._addDivider();
         this._addComment("Timesteps..");
+        this._addComment();
         for (Atom a: this._generateTimeSteps(this._instal.getTimeSteps())) {
             this._addItem(a);
         }

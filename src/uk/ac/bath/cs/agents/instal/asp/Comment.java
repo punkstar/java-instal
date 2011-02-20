@@ -9,6 +9,6 @@ public class Comment extends Atom {
     }
     
     public String toString() {
-        return String.format("%% %s", this._message.replaceAll("\n", ""));
+        return String.format("%% %% %s", this._message.replaceAll("\n", ""));
     }
 }
