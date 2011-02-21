@@ -153,7 +153,8 @@ public class Test {
 		
 		inst.terminates(t1);
 		
-		inst.initially(cbusy.initially("alice", "bob"));
+		/** Initial fluent values **/
+		inst.initially(cbusy.initially("alice", "2"));
 		
 		this.__log("InstAL:");
 		System.out.println(inst.toString());
