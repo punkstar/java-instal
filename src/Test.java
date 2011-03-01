@@ -1,4 +1,5 @@
 import uk.ac.bath.cs.agents.instal.CreationEvent;
+import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.ExogeneousEvent;
 import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
@@ -153,14 +154,23 @@ public class Test {
 		
 		inst.terminates(t1);
 		
+		Domain d = new Domain();
+		
 		/** Initial fluent values **/
-		inst.initially(cbusy.initially("alice", "2"));
+		d.initially(cbusy.initially("alice", "2"));
+	        
+	    d.concreteType(handset, "handset_1").concreteType(handset, "handset_2");
+	    d.concreteType(chunk, "chunk_1").concreteType(chunk, "chunk_2");
+	    d.concreteType(player, "player_1").concreteType(player, "player_2");
+	    d.concreteType(time, "time_1").concreteType(time, "time_2");
+	    d.concreteType(channel, "channel_1").concreteType(channel, "channel_2");
+	    d.concreteType(connectionPoint, "cp_1").concreteType(connectionPoint, "cp_2");
 		
 		this.__log("InstAL:");
 		System.out.println(inst.toString());
 		
 		this.__log("ASP:");
-		AnsProlog asp = new AnsProlog(inst);
+		AnsProlog asp = new AnsProlog(inst, d);
 		asp.generate();
 		System.out.println(asp.toString());
 	}

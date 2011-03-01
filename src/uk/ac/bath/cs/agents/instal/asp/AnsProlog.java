@@ -1,35 +1,38 @@
 package uk.ac.bath.cs.agents.instal.asp;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
 
 import uk.ac.bath.cs.agents.instal.Condition;
+import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
-import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
 import uk.ac.bath.cs.agents.instal.Rule;
 import uk.ac.bath.cs.agents.instal.Terminates;
+import uk.ac.bath.cs.agents.instal.Type;
 
 public class AnsProlog extends InstalASPTranslator {
 
-	public AnsProlog(Institution instalSpec) {
-		super(instalSpec);
+	public AnsProlog(Institution instalSpec, Domain domain) {
+		super(instalSpec, domain);
 	}
 	
-	public void generate() {
+	public AnsProlog generate() {
 	    this._addDivider();
         this._addComment("Engine: AnsProlog, Nick Jones <nj210@bath.ac.uk>");
         this._addDivider();
-        super.generate();
+        return (AnsProlog) super.generate();
 	}
 	
 	protected Atom _generateInstitutionName(String name) {
 	    return new Blank(String.format("inst(%s).", name));
 	}
 	
-	protected Atom[] _generateInitiallyFluents(Fluent[] fluents) {
+	protected Atom[] _generateInitiallyFluents(InitiallyFluent[] fluents) {
 	    Atom[] atoms = new Atom[fluents.length];
 	    
 	    for (int i = 0; i < fluents.length; i++) {
@@ -86,6 +89,10 @@ public class AnsProlog extends InstalASPTranslator {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
         
         for (Rule r: rules) {
+        	Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
+        	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
+        	Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
+        	
             atoms.add(new Comment(""));
             atoms.add(new Comment(String.format("Translation of: %s", r.toString())));
             
@@ -96,13 +103,15 @@ public class AnsProlog extends InstalASPTranslator {
             }
             
             for (String s: r.getResultAtomsWithVariables()) {
+            	
                 atoms.add(
                     new Blank(String.format(
-                        "initiated(%s, I) :- occured(%s, I), %sholdsat(live(%s), I), instant(I).",
+                        "initiated(%s, I) :- occured(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
-                        this._instal.getName()
+                        this._instal.getName(),
+                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map, result_type_map)
                     ))
                 );
             }
@@ -124,15 +133,19 @@ public class AnsProlog extends InstalASPTranslator {
             for (int i = 0; i < r.getConditionsWithVariables().length; i++) {
                 conditions.append("holdsat(").append(r.getConditionsWithVariables()[i]).append(", I), ");
             }
-            
+                        
             for (String s: r.getResultAtomsWithVariables()) {
+            	Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
+            	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
+            	
                 atoms.add(
                     new Blank(String.format(
-                        "terminated(%s, I) :- occured(%s, I), %sholdsat(live(%s), I), instant(I).",
+                        "terminated(%s, I) :- occured(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
-                        this._instal.getName()
+                        this._instal.getName(),
+                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map)
                     ))
                 );
             }
@@ -141,12 +154,42 @@ public class AnsProlog extends InstalASPTranslator {
         return atoms.toArray(new Atom[] {});
     }
     
+    /**
+     * @TODO Sort out the grounding..
+     */
     protected Atom[] _generateGenerateRules(Generates[] rules) {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
         
         for (Rule r: rules) {
+            Hashtable<String, Type> symbols = new Hashtable<String, Type>();
+            String[] combination_map = new String[r.getConditions().length];
+            
             atoms.add(new Comment(""));
             atoms.add(new Comment(String.format("Translation of: %s", r.toString())));
+            
+            // Map our condition variables to symbols..
+            for (int i = 0; i < r.getConditions().length; i++) {
+                for (int j = 0; j < r.getConditions()[i].getVariables().length; j++) {
+                    Type t = r.getConditions()[i].getFluent().getParameterTypeAtPosition(j);
+                    String v = r.getConditions()[i].getVariables()[j];
+                    combination_map[j] = v;
+                    
+                    if (!symbols.containsKey(v)) {
+                        symbols.put(v,t);
+                    }
+                }
+            }
+            
+            ArrayList<String[]> permutables = new ArrayList<String[]>();
+            String[] symbol_key = symbols.keySet().toArray(new String[] {});
+            for(int i = 0; i < symbol_key.length; i++) {
+            	permutables.add(this._domain.getConcretesOf(symbols.get(symbol_key[i])));
+            }
+            
+            Permuter p = new Permuter(symbol_key.length);
+            p._dynamic(permutables);
+            
+            String[][] solutions = p.permute();
             
             StringBuilder conditions = new StringBuilder();
             
@@ -161,14 +204,18 @@ public class AnsProlog extends InstalASPTranslator {
             }
             
             for (String s: r.getResultAtomsWithVariables()) {
+            	Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
+            	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
+            	
                 atoms.add(
                     new Blank(String.format(
-                        "occured(%s, I) :- occured(%s, I), %sholdsat(pow(%s, %s), I), instant(I).",
+                        "occured(%s, I) :- occured(%s, I), %sholdsat(pow(%s, %s), I), %sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
-                        s
+                        s,
+                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map)
                     ))
                 );
             }
@@ -177,7 +224,19 @@ public class AnsProlog extends InstalASPTranslator {
         return atoms.toArray(new Atom[] {});
     }
     
-    protected Atom[] _generateInitiallyFluents(InitiallyFluent[] inits) {
+    protected Atom[] _generateConcreteTypes(Domain d) {
+    	ArrayList<Atom> atoms = new ArrayList<Atom>();
+    	
+    	for (Type t: d.getDefinedTypes()) {
+    		for (String concrete: d.getConcretesOf(t)) {
+    			atoms.add(new Blank(String.format("%s(%s).", t.toString().toLowerCase(), concrete)));
+    		}
+    	}
+    	
+    	return atoms.toArray(new Atom[] {});
+    }
+    
+    protected Atom[] i(InitiallyFluent[] inits) {
         ArrayList<Atom> atoms = new ArrayList<Atom>(inits.length);
         
         for (InitiallyFluent i: inits) {
@@ -198,5 +257,32 @@ public class AnsProlog extends InstalASPTranslator {
         atoms[steps*2] = new Blank(String.format("final(i%02d).", steps));
             
         return atoms;
+    }
+    
+    private String __generateVariableTypeGroundingRules(Hashtable<String, Type> ... tables) {
+    	ArrayList<String> done = new ArrayList<String>();
+    	StringBuilder builder = new StringBuilder();
+    	
+    	if (tables != null) {
+    		for(Hashtable<String, Type> table: tables) {
+    			if (table != null) {
+			    	Iterator<String> iter = table.keySet().iterator();
+			    	while(iter.hasNext()) {
+			    		String key = iter.next();
+			    		
+			    		if (!done.contains(key)) {
+				    		builder.append(table.get(key).toString().toLowerCase())
+			    		       .append("(")
+			    		       .append(key)
+			    		       .append("), ");
+				    		
+				    		done.add(key);
+			    		}
+			    	}
+    			}
+    		}
+    	}
+    	
+    	return builder.toString();
     }
 }

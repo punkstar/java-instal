@@ -29,4 +29,12 @@ public class Condition {
     public String asVariablesToString() {
         return this._fluent.asVariablesToString(this._variables);
     }
+    
+    public Fluent getFluent() {
+        return this._fluent;
+    }
+    
+    public String[] getVariables() {
+        return this._variables;
+    }
 }

@@ -2,6 +2,7 @@ package uk.ac.bath.cs.agents.instal;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 public abstract class Parameters extends Atom implements Cloneable {
@@ -10,6 +11,14 @@ public abstract class Parameters extends Atom implements Cloneable {
 	
 	public Parameters(String name, int atom, int type) {
 		super(name, atom, type);
+	}
+	
+	public Type getParameterTypeAtPosition(int position) {
+	    if (this._parameters.size() > position) {
+	        return this._parameters.get(position);
+	    } else {
+	        return null;
+	    }
 	}
 	
 	public Parameters addParameter(Type t) {
@@ -24,7 +33,25 @@ public abstract class Parameters extends Atom implements Cloneable {
 	}
 	
 	public String[] getParameterVariables() {
-	    return this._variables.toArray(new String[] {});
+		if (this.hasVariables()) {
+			return this._variables.toArray(new String[] {});
+		} else {
+			return null;
+		}
+	}
+	
+	public Hashtable<String, Type> getParameterVariablesTypeMap(String[] variables) {
+	    Hashtable<String, Type> table = new Hashtable<String,Type>();
+	    
+	    if (variables == null) {
+	    	return null;
+	    }
+	    
+	    for (int i = 0; i < variables.length; i++) {
+	        table.put(variables[i], this.getParameterTypeAtPosition(i));
+	    }
+	    
+	    return table;
 	}
 	
     public String toString() {

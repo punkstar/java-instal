@@ -2,6 +2,7 @@ package uk.ac.bath.cs.agents.instal;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 public abstract class Conditional extends Atom {
@@ -48,6 +49,29 @@ public abstract class Conditional extends Atom {
         }
         
         return c;
+    }
+    
+    public Hashtable<String, Type> getConditionalVariablesTypeMap() {
+        Hashtable<String, Type> table = new Hashtable<String, Type>();
+        
+        Iterator<Condition> conditions = this._conditions.iterator();
+        while(conditions.hasNext()) {
+            Condition condition = conditions.next();
+            Fluent f = condition.getFluent();
+            
+            // Join the tables
+            Hashtable<String, Type> semi_table =  f.getParameterVariablesTypeMap(condition.getVariables());
+            
+            if (semi_table != null) {
+                Iterator<String> semi_iter = semi_table.keySet().iterator();
+                while(semi_iter.hasNext()) {
+                    String key = semi_iter.next();
+                    table.put(key, semi_table.get(key));
+                }
+            }
+        }
+        
+        return table;
     }
     
     private String __join(AbstractCollection<Condition> s, AbstractCollection<String[]> v, String delimiter) {

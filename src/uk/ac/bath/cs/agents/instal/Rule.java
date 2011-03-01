@@ -2,6 +2,7 @@ package uk.ac.bath.cs.agents.instal;
 
 import java.util.AbstractCollection;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 
 public abstract class Rule extends Conditional {
@@ -45,8 +46,31 @@ public abstract class Rule extends Conditional {
 	    return atoms;
 	}
 	
+	public Hashtable<String, Type> getResultAtomsTypeMap() {
+	    Hashtable<String, Type> table = new Hashtable<String, Type>();
+	    
+	    for(int i = 0; i < this._resultAtoms.size(); i++) {
+	        Hashtable<String, Type> semi_map = this._resultAtoms.get(i).getParameterVariablesTypeMap(this._resultAtomVariables.get(i));
+	        Iterator<String> iter = semi_map.keySet().iterator();
+	        while (iter.hasNext()) {
+	            String key = iter.next();
+	            table.put(key, semi_map.get(key));
+	        }
+	    }
+	    
+	    return table;
+	}
+	
+	public Event getSourceEvent() {
+	    return this._sourceEvent;
+	}
+	
+	public String[] getSourceEventVariables() {
+	    return this._sourceEventVariables;
+	}
+	
 	public String _getSourceEventWithVariables() {
-		return this._sourceEvent.asVariablesToString(this._sourceEventVariables);
+		return this.getSourceEvent().asVariablesToString(this._sourceEventVariables);
 	}
     
     private String __join(AbstractCollection<Parameters> s, AbstractCollection<String[]> v, String delimiter) {

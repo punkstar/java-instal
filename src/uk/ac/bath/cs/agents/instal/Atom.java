@@ -10,18 +10,20 @@ public abstract class Atom {
 	public static int ATOM_CONSEQUENCE = 5;
 	public static int ATOM_TYPE = 6;
 	
-	protected RopeBuilder _rope = new RopeBuilder();
+	//protected RopeBuilder _rope = new RopeBuilder();
 	protected int _atom;
 	protected int _type;
-	protected Rope _name;
+	//protected Rope _name;
+	protected String _name;
 	
 	protected Atom(String name, int atom, int type) {
-		this._name = this._rope.build(name.toCharArray());
-		this._atom = atom;
+		//this._name = this._rope.build(name.toCharArray());
+		this._name = name;
+	    this._atom = atom;
 		this._type = type;
 	}
 	
-	public Rope getName() {
+	public String getName() {
 		return this._name;
 	}
 	

@@ -7,9 +7,10 @@ import org.ahmadsoft.ropes.Rope;
 import org.ahmadsoft.ropes.RopeBuilder;
 
 public class Institution {
-	protected RopeBuilder _rope = new RopeBuilder();
-	protected Rope _name;
-	protected int _timeSteps;
+	//protected RopeBuilder _rope = new RopeBuilder();
+	//protected Rope _name;
+	protected String _name;
+    protected int _timeSteps;
 	
     protected ArrayList<Type> _types = new ArrayList<Type>();
     protected ArrayList<Event> _events = new ArrayList<Event>();
@@ -20,8 +21,9 @@ public class Institution {
     protected ArrayList<InitiallyFluent> _initially = new ArrayList<InitiallyFluent>();
 	
 	public Institution(String name, int time_steps) {
-		this._name = this._rope.build(name.toCharArray());
-		this._timeSteps = time_steps;
+		//this._name = this._rope.build(name.toCharArray());
+		this._name = name;
+	    this._timeSteps = time_steps;
 	}
 	
 	public Institution type(Type t) {

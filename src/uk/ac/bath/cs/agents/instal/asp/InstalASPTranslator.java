@@ -3,6 +3,7 @@ package uk.ac.bath.cs.agents.instal.asp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
@@ -13,6 +14,7 @@ import uk.ac.bath.cs.agents.instal.Terminates;
 public abstract class InstalASPTranslator {
     protected ArrayList<Atom> _program = new ArrayList<Atom>();
     protected Institution _instal;
+    protected Domain _domain;
     
     abstract protected Atom _generateInstitutionName(String name);
     abstract protected Atom[] _generateInitiallyFluents(InitiallyFluent[] fluents);
@@ -21,9 +23,11 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateTerminateRules(Terminates[] rules);
     abstract protected Atom[] _generateGenerateRules(Generates[] rules);
     abstract protected Atom[] _generateTimeSteps(int timesteps);
+    abstract protected Atom[] _generateConcreteTypes(Domain d);
     
-	public InstalASPTranslator(Institution instal_spec) {
+	public InstalASPTranslator(Institution instal_spec, Domain domain) {
 	    this._instal = instal_spec;
+	    this._domain = domain;
 	}
 	
 	protected InstalASPTranslator _addComment(String message) {
@@ -46,14 +50,28 @@ public abstract class InstalASPTranslator {
 	    this._program.add(a); return this;
 	}
 	
-	public void generate() {
+	public InstalASPTranslator generate() {
         this._addComment(String.format("Institution: %s", this._instal.getName()));
         this._addItem(this._generateInstitutionName(this._instal.getName()));
         
         this._addDivider();
-        this._addComment("Initial fluents..");
+        this._addComment("Concreting types..");
+        this._addComment();
+        for(Atom a: this._generateConcreteTypes(this._domain)) {
+            this._addItem(a);
+        }
+        
+        this._addDivider();
+        this._addComment("Initial insitution fluents..");
         this._addComment();
         for(Atom a: this._generateInitiallyFluents(this._instal.getInitiallyFluents())) {
+            this._addItem(a);
+        }
+
+        this._addDivider();
+        this._addComment("Initial domain fluents..");
+        this._addComment();
+        for(Atom a: this._generateInitiallyFluents(this._domain.getInitiallyFluents())) {
             this._addItem(a);
         }
         
@@ -89,6 +107,8 @@ public abstract class InstalASPTranslator {
         for (Atom a: this._generateTimeSteps(this._instal.getTimeSteps())) {
             this._addItem(a);
         }
+        
+        return this;
 	}
 	
 	public String toString() {
