@@ -160,37 +160,7 @@ public class AnsProlog extends InstalASPTranslator {
     protected Atom[] _generateGenerateRules(Generates[] rules) {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
         
-        for (Rule r: rules) {
-            Hashtable<String, Type> symbols = new Hashtable<String, Type>();
-            String[] combination_map = new String[r.getConditions().length];
-            
-            atoms.add(new Comment(""));
-            atoms.add(new Comment(String.format("Translation of: %s", r.toString())));
-            
-            // Map our condition variables to symbols..
-            for (int i = 0; i < r.getConditions().length; i++) {
-                for (int j = 0; j < r.getConditions()[i].getVariables().length; j++) {
-                    Type t = r.getConditions()[i].getFluent().getParameterTypeAtPosition(j);
-                    String v = r.getConditions()[i].getVariables()[j];
-                    combination_map[j] = v;
-                    
-                    if (!symbols.containsKey(v)) {
-                        symbols.put(v,t);
-                    }
-                }
-            }
-            
-            ArrayList<String[]> permutables = new ArrayList<String[]>();
-            String[] symbol_key = symbols.keySet().toArray(new String[] {});
-            for(int i = 0; i < symbol_key.length; i++) {
-            	permutables.add(this._domain.getConcretesOf(symbols.get(symbol_key[i])));
-            }
-            
-            Permuter p = new Permuter(symbol_key.length);
-            p._dynamic(permutables);
-            
-            String[][] solutions = p.permute();
-            
+        for (Rule r: rules) {            
             StringBuilder conditions = new StringBuilder();
             
             for (int i = 0; i < r.getConditionsWithVariables().length; i++) {
