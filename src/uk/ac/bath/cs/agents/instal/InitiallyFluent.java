@@ -7,10 +7,10 @@ public class InitiallyFluent extends Fluent {
     }
     
     public String definitionToString() {
-        return String.format("initally %s;", this.asVariablesToString(this._variables.toArray(new String[] {})));
+        return String.format("initally %s;", this.toString());
     }
     
     public String toString() {
-        return this.definitionToString();
+        return this.asVariablesToString(this._variables.toArray(new String[] {}));
     }
 }

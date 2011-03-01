@@ -137,6 +137,7 @@ public class AnsProlog extends InstalASPTranslator {
             for (String s: r.getResultAtomsWithVariables()) {
             	Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
             	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
+            	Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
             	
                 atoms.add(
                     new Blank(String.format(
@@ -145,7 +146,7 @@ public class AnsProlog extends InstalASPTranslator {
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
-                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map)
+                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map, result_type_map)
                     ))
                 );
             }

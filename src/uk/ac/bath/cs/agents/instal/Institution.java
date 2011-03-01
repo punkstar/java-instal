@@ -140,7 +140,7 @@ public class Institution {
         Iterator<InitiallyFluent> iter_init = this._initially.iterator();
         while (iter_init.hasNext()) {
             InitiallyFluent init = iter_init.next();
-            output += init.toString();
+            output += init.definitionToString();
         }
 		
 		return output;
