@@ -7,6 +7,7 @@ import java.util.Iterator;
 import uk.ac.bath.cs.agents.instal.Condition;
 import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
+import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
@@ -36,10 +37,25 @@ public class AnsProlog extends InstalASPTranslator {
 	    Atom[] atoms = new Atom[fluents.length];
 	    
 	    for (int i = 0; i < fluents.length; i++) {
-	        atoms[i] = new Blank(String.format("ifluent(%s).", fluents[i].toString()));
+	        InitiallyFluent fluent = fluents[i];
+	        
+	        if (fluent.getFluent().getType() == Fluent.TYPE_PERMISSION || fluent.getFluent().getType() == Fluent.TYPE_POWER) {
+	            if (fluent.hasUngroundedVariables()) {
+                    Hashtable<String, Type> type_map = fluent.getUngroundedVariableTypeMap();
+                    atoms[i] = new Blank(String.format("ifluent(%s) :- %s.", fluent.toString(), this.__generateVariableTypeGroundingRules("", type_map)));	            
+	            } else {
+	                atoms[i] = new Blank(String.format("ifluent(%s).", fluent.toString())); 
+	            }
+	        } else {
+	            atoms[i] = new Blank(String.format("ifluent(%s).", fluent.toString()));  
+	        }
 	    }
 	    
-	    return atoms;
+	    if (atoms.length > 0) {
+	        return atoms;
+	    } else {
+	        return new Atom[] { new Comment("None") };
+	    }
 	}
 	
 	/**
@@ -111,7 +127,7 @@ public class AnsProlog extends InstalASPTranslator {
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
-                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map, result_type_map)
+                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map)
                     ))
                 );
             }
@@ -146,7 +162,7 @@ public class AnsProlog extends InstalASPTranslator {
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
-                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map, result_type_map)
+                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map)
                     ))
                 );
             }
@@ -186,7 +202,7 @@ public class AnsProlog extends InstalASPTranslator {
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
                         s,
-                        this.__generateVariableTypeGroundingRules(source_type_map, conditions_type_map)
+                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map)
                     ))
                 );
             }
@@ -207,16 +223,6 @@ public class AnsProlog extends InstalASPTranslator {
     	return atoms.toArray(new Atom[] {});
     }
     
-    protected Atom[] i(InitiallyFluent[] inits) {
-        ArrayList<Atom> atoms = new ArrayList<Atom>(inits.length);
-        
-        for (InitiallyFluent i: inits) {
-            atoms.add(new Blank(String.format("ifluent(%s%s).", i.getName().toString(), i.getVariablesWithParenthesisToString(i.getParameterVariables()))));
-        }
-        
-        return atoms.toArray(new Atom[] {});
-    }
-    
     protected Atom[] _generateTimeSteps(int steps) {
         Atom[] atoms = new Atom[steps*2+1];
         
@@ -230,8 +236,9 @@ public class AnsProlog extends InstalASPTranslator {
         return atoms;
     }
     
-    private String __generateVariableTypeGroundingRules(Hashtable<String, Type> ... tables) {
-    	ArrayList<String> done = new ArrayList<String>();
+    private String __generateVariableTypeGroundingRules(String suffix, Hashtable<String, Type> ... tables) {
+        String deliminator = ", ";
+        ArrayList<String> done = new ArrayList<String>();
     	StringBuilder builder = new StringBuilder();
     	
     	if (tables != null) {
@@ -242,10 +249,11 @@ public class AnsProlog extends InstalASPTranslator {
 			    		String key = iter.next();
 			    		
 			    		if (!done.contains(key)) {
-				    		builder.append(table.get(key).toString().toLowerCase())
-			    		       .append("(")
-			    		       .append(key)
-			    		       .append("), ");
+				    		builder.append(this.__typeToStringRepresentation(table.get(key)))
+			    		           .append("(")
+			    		           .append(key)
+			    		           .append(")")
+			    		           .append(deliminator);
 				    		
 				    		done.add(key);
 			    		}
@@ -254,6 +262,16 @@ public class AnsProlog extends InstalASPTranslator {
     		}
     	}
     	
+    	if (builder.length() > 0) {
+        	builder.delete(builder.length() - deliminator.length() , builder.length());
+    
+        	builder.append(suffix);
+    	}
+    	
     	return builder.toString();
+    }
+    
+    private String __typeToStringRepresentation(Type t) {
+        return t.toString().toLowerCase();
     }
 }

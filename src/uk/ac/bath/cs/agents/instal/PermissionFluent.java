@@ -2,7 +2,7 @@ package uk.ac.bath.cs.agents.instal;
 
 public class PermissionFluent extends Fluent {
 	public PermissionFluent(Fluent f) {
-		super(f.getName().toString());
+		super(f, Fluent.TYPE_PERMISSION);
 	}
 	
 	public String asVariablesToString(String[] variables) {

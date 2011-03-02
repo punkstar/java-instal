@@ -33,4 +33,18 @@ public abstract class Event extends Parameters {
     public ViolationEvent viol() {
     	return new ViolationEvent(this);
     }
+    
+    public PermissionFluent perm(String ... variables) {
+        PermissionFluent f = new Fluent(this.getName()).perm();
+        f.setParameters(this.getParameters());
+        f.setParameterVariables(variables);
+        return f;
+    }
+    
+    public PowerFluent pow(String ... variables) {
+        PowerFluent f = new Fluent(this.getName()).pow();
+        f.setParameters(this.getParameters());
+        f.setParameterVariables(variables);
+        return f;
+    }
 }

@@ -25,30 +25,47 @@ public abstract class Parameters extends Atom implements Cloneable {
 		this._parameters.add(t); return this;
 	}
 	
+	public Parameters setParameters(ArrayList<Type> types) {
+	    this._parameters = types; return this;
+	}
+	
+	public ArrayList<Type> getParameters() {
+	    return this._parameters;
+	}
+	
 	public void setParameterVariables(String ... vars) {
-		this._variables = new ArrayList<String>(vars.length);
-		for (String var : vars) {
-			this._variables.add(var);
-		}
+	    if (vars != null && vars.length > 0) {
+	        this._variables = new ArrayList<String>(vars.length);
+	        for (String var : vars) {
+	            this._variables.add(var);
+	        }
+	    }
 	}
 	
 	public String[] getParameterVariables() {
 		if (this.hasVariables()) {
 			return this._variables.toArray(new String[] {});
 		} else {
-			return null;
+			return new String[] {};
 		}
 	}
 	
 	public Hashtable<String, Type> getParameterVariablesTypeMap(String[] variables) {
 	    Hashtable<String, Type> table = new Hashtable<String,Type>();
 	    
-	    if (variables == null) {
+	    if (variables == null || variables.length == 0) {
 	    	return null;
 	    }
 	    
 	    for (int i = 0; i < variables.length; i++) {
-	        table.put(variables[i], this.getParameterTypeAtPosition(i));
+	        Type t = this.getParameterTypeAtPosition(i);
+	        
+	        if (t == null) {
+	            System.err.println("Type is null");
+	            continue;
+	        }
+	        
+	        table.put(variables[i], t);
 	    }
 	    
 	    return table;
