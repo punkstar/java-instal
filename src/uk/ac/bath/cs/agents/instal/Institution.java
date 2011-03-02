@@ -3,9 +3,6 @@ package uk.ac.bath.cs.agents.instal;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.ahmadsoft.ropes.Rope;
-import org.ahmadsoft.ropes.RopeBuilder;
-
 public class Institution {
 	//protected RopeBuilder _rope = new RopeBuilder();
 	//protected Rope _name;
@@ -64,6 +61,18 @@ public class Institution {
 	
 	public Event[] getEvents() {
 		return this._events.toArray(new Event[] {});
+	}
+	
+	public CreationEvent[] getCreationEvents() {
+	    ArrayList<CreationEvent> list = new ArrayList<CreationEvent>();
+	    
+	    for(Event e: this.getEvents()) {
+	        if (e.getType() == Event.TYPE_CREATION) {
+	            list.add((CreationEvent) e);
+	        }
+	    }
+	    
+	    return list.toArray(new CreationEvent[] {});
 	}
 	
 	public Fluent[] getFluents() {

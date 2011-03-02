@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import uk.ac.bath.cs.agents.instal.Condition;
+import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Fluent;
@@ -234,6 +235,42 @@ public class AnsProlog extends InstalASPTranslator {
         atoms[steps*2] = new Blank(String.format("final(i%02d).", steps));
             
         return atoms;
+    }
+    
+    protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+        
+        for(InitiallyFluent f: fluents) {
+            Hashtable<String, Type> type_map = new Hashtable<String, Type>();
+            
+            if (f.hasUngroundedVariables()) {
+                type_map = f.getUngroundedVariableTypeMap();
+            }
+            
+            for(CreationEvent e: events) {
+                // For each event, build up a possible set of variables, then a type map
+                int counter = 0;
+                Hashtable<String, Type> event_type_map = new Hashtable<String, Type>();
+                ArrayList<Type> parameters = e.getParameters();
+                Iterator<Type> iter = parameters.iterator();
+                while (iter.hasNext()) {
+                    Type t = iter.next();
+                    event_type_map.put(String.format("VAR_%02d", counter++), t);
+                }
+                
+                atoms.add(
+                    new Blank(String.format(
+                        "initiated(%s, I) :- occured(%s, I), not holdsat(live, I), evtype(%s, create), %sinstant(I).",
+                        f.toString(),
+                        e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
+                        e.getName(),
+                        this.__generateVariableTypeGroundingRules(", ", event_type_map, type_map)
+                    ))
+                );
+            }
+        }
+        
+        return atoms.toArray(new Atom[] {});
     }
     
     private String __generateVariableTypeGroundingRules(String suffix, Hashtable<String, Type> ... tables) {

@@ -47,6 +47,8 @@ public class Test {
         // Creation
         CreationEvent create_grid = new CreationEvent("creategrid");
         
+        create_grid.addParameter(handset);
+        
         // Normative
         NormativeEvent intObtain = new NormativeEvent("intObtain");
         NormativeEvent intShare = new NormativeEvent("intShare");

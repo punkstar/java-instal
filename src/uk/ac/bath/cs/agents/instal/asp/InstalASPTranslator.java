@@ -3,6 +3,7 @@ package uk.ac.bath.cs.agents.instal.asp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Generates;
@@ -24,6 +25,7 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateGenerateRules(Generates[] rules);
     abstract protected Atom[] _generateTimeSteps(int timesteps);
     abstract protected Atom[] _generateConcreteTypes(Domain d);
+    abstract protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents);
     
 	public InstalASPTranslator(Institution instal_spec, Domain domain) {
 	    this._instal = instal_spec;
@@ -98,6 +100,12 @@ public abstract class InstalASPTranslator {
         this._addDivider();
         this._addComment("Generation rules..");
         for (Atom a: this._generateGenerateRules(this._instal.getGenerates())) {
+            this._addItem(a);
+        }
+        
+        this._addDivider();
+        this._addComment("Creation rules..");
+        for (Atom a: this._generateCreateEventRules(this._instal.getCreationEvents(), this._domain.getInitiallyFluents())) {
             this._addItem(a);
         }
         
