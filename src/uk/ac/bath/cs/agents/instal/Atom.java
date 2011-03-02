@@ -9,6 +9,7 @@ public abstract class Atom {
 	public static int ATOM_GENERATES = 4;
 	public static int ATOM_CONSEQUENCE = 5;
 	public static int ATOM_TYPE = 6;
+	public static int ATOM_OBLIGATION = 7;
 	
 	//protected RopeBuilder _rope = new RopeBuilder();
 	protected int _atom;

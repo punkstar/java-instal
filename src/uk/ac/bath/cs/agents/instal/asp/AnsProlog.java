@@ -14,6 +14,7 @@ import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
+import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Rule;
 import uk.ac.bath.cs.agents.instal.Terminates;
 import uk.ac.bath.cs.agents.instal.Type;
@@ -126,7 +127,7 @@ public class AnsProlog extends InstalASPTranslator {
             	
                 atoms.add(
                     new Blank(String.format(
-                        "initiated(%s, I) :- occured(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
+                        "initiated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
@@ -161,7 +162,7 @@ public class AnsProlog extends InstalASPTranslator {
             	
                 atoms.add(
                     new Blank(String.format(
-                        "terminated(%s, I) :- occured(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
+                        "terminated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
@@ -200,7 +201,7 @@ public class AnsProlog extends InstalASPTranslator {
             	
                 atoms.add(
                     new Blank(String.format(
-                        "occured(%s, I) :- occured(%s, I), %sholdsat(pow(%s, %s), I), %sinstant(I).",
+                        "occurred(%s, I) :- occurred(%s, I), %sholdsat(pow(%s, %s), I), %sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
@@ -263,7 +264,7 @@ public class AnsProlog extends InstalASPTranslator {
                 
                 atoms.add(
                     new Blank(String.format(
-                        "initiated(%s, I) :- occured(%s, I), not holdsat(live(%s), I), evtype(%s, %s), %sinstant(I).",
+                        "initiated(%s, I) :- occurred(%s, I), not holdsat(live(%s), I), evtype(%s, %s), %sinstant(I).",
                         f.toString(),
                         e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
                         this._instal.getName(),
@@ -304,6 +305,54 @@ public class AnsProlog extends InstalASPTranslator {
         }
         
         return atoms.toArray(new Atom[] {});
+    }
+    
+    protected Atom[] _generateObligations(Obligation[] obligations) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+
+        for (Obligation o: obligations) {
+            Hashtable<String, Type> act_type_map = o.getAct().getParameterVariablesTypeMap(o.getActVars());
+            Hashtable<String, Type> before_type_map = o.getBefore().getParameterVariablesTypeMap(o.getBeforeVars());
+            Hashtable<String, Type> otherwise_type_map = o.getOtherwise().getParameterVariablesTypeMap(o.getOtherwiseVars());
+            
+            String type_map_resolved = this.__generateVariableTypeGroundingRules(", ", act_type_map, before_type_map, otherwise_type_map);
+            
+            atoms.add(new Comment(String.format("Translation of %s", o.toString())));
+            
+            String act = o.getAct().asVariablesToString(o.getActVars());
+            String before = o.getBefore().asVariablesToString(o.getBeforeVars());
+            String otherwise = o.getOtherwise().asVariablesToString(o.getOtherwiseVars());
+            
+            atoms.add(new Blank(String.format(
+                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I)",
+                act,
+                before,
+                otherwise,
+                act,
+                type_map_resolved
+            )));
+            
+            atoms.add(new Blank(String.format(
+                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I)",
+                act,
+                before,
+                otherwise,
+                before,
+                type_map_resolved
+            )));
+            
+            atoms.add(new Blank(String.format(
+                "occurred(%s, I) :- holdsat(obl(%s, %s, %s), I), occurred(%s, I), %sinstant(I).",
+                otherwise,
+                act,
+                before,
+                otherwise,
+                before,
+                type_map_resolved
+            )));
+        }
+        
+        return atoms.toArray(new Atom [] {});
     }
     
     private String __generateVariableTypeGroundingRules(String suffix, Hashtable<String, Type> ... tables) {

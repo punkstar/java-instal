@@ -2,6 +2,7 @@ package uk.ac.bath.cs.agents.instal;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 /**
  * Store the domain specific information relating to the instantiation of an institution.
@@ -72,5 +73,28 @@ public class Domain {
         }
         
         return null;
+    }
+    
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        
+        for (InitiallyFluent i: this.getInitiallyFluents()) {
+            builder.append("initially ").append(i.toString()).append(";\n");
+        }
+        
+        Iterator<Type> iter = this._concreteTypes.keySet().iterator();
+        while(iter.hasNext()) {
+            Type t = iter.next();
+            
+            for (String s: this._concreteTypes.get(t)) {
+                builder.append(t.getName())
+                       .append("(")
+                       .append(s)
+                       .append(");")
+                       .append("\n");
+            }
+        }
+        
+        return builder.toString();
     }
 }

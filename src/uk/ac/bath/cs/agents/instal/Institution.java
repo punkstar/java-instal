@@ -16,6 +16,7 @@ public class Institution {
     protected ArrayList<Initiates> _initiates = new ArrayList<Initiates>();
     protected ArrayList<Terminates> _terminates = new ArrayList<Terminates>();
     protected ArrayList<InitiallyFluent> _initially = new ArrayList<InitiallyFluent>();
+    protected ArrayList<Obligation> _obligations = new ArrayList<Obligation>();
 	
 	public Institution(String name, int time_steps) {
 		//this._name = this._rope.build(name.toCharArray());
@@ -49,6 +50,10 @@ public class Institution {
 	
 	public Institution initially(InitiallyFluent f) {
 	    this._initially.add(f); return this;
+	}
+	
+	public Institution obl(Obligation o) {
+	    this._obligations.add(o); return this;
 	}
 	
 	public String getName() {
@@ -107,6 +112,10 @@ public class Institution {
 	    return this._initially.toArray(new InitiallyFluent[] {});
 	}
 	
+	public Obligation[] getObligations() {
+	    return this._obligations.toArray(new Obligation[] {});
+	}
+	
 	public int getTimeSteps() {
 	    return this._timeSteps;
 	}
@@ -162,6 +171,12 @@ public class Institution {
         while (iter_init.hasNext()) {
             InitiallyFluent init = iter_init.next();
             output += init.definitionToString();
+        }
+        
+        Iterator<Obligation> iter_obl = this._obligations.iterator();
+        while (iter_obl.hasNext()) {
+            Obligation obl = iter_obl.next();
+            output += obl.toString();
         }
 		
 		return output;

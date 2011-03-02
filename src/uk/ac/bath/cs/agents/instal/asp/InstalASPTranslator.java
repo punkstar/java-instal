@@ -11,6 +11,7 @@ import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
+import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Terminates;
 
 public abstract class InstalASPTranslator {
@@ -28,6 +29,7 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateConcreteTypes(Domain d);
     abstract protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents);
     abstract protected Atom[] _generateDissolutionEventRules(DissolutionEvent[] events);
+    abstract protected Atom[] _generateObligations(Obligation[] obligations);
     
 	public InstalASPTranslator(Institution instal_spec, Domain domain) {
 	    this._instal = instal_spec;
@@ -111,9 +113,19 @@ public abstract class InstalASPTranslator {
             this._addItem(a);
         }
 
+        for (Atom a: this._generateCreateEventRules(this._instal.getCreationEvents(), this._instal.getInitiallyFluents())) {
+            this._addItem(a);
+        }
+        
         this._addDivider();
         this._addComment("Dissolution rules..");
         for (Atom a: this._generateDissolutionEventRules(this._instal.getDissolutionEvents())) {
+            this._addItem(a);
+        }
+        
+        this._addDivider();
+        this._addComment("Obligations..");
+        for (Atom a: this._generateObligations(this._instal.getObligations())) {
             this._addItem(a);
         }
         
@@ -123,6 +135,11 @@ public abstract class InstalASPTranslator {
         for (Atom a: this._generateTimeSteps(this._instal.getTimeSteps())) {
             this._addItem(a);
         }
+        
+        this._addDivider();
+        this._addComment("Kick everything off..");
+        this._addComment();
+        this._addItem(new Blank(String.format("ifluent(live(%s)).", this._instal.getName())));
         
         return this;
 	}
