@@ -6,6 +6,7 @@ import java.util.Iterator;
 
 import uk.ac.bath.cs.agents.instal.Condition;
 import uk.ac.bath.cs.agents.instal.CreationEvent;
+import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Fluent;
@@ -96,6 +97,8 @@ public class AnsProlog extends InstalASPTranslator {
 	            return "inst";
 	        case Event.TYPE_VIOLATION:
 	            return "viol";
+	        case Event.TYPE_DISSOLUTION:
+	            return "diss";
 	        default:
 	            return "";
 	    }
@@ -260,14 +263,42 @@ public class AnsProlog extends InstalASPTranslator {
                 
                 atoms.add(
                     new Blank(String.format(
-                        "initiated(%s, I) :- occured(%s, I), not holdsat(live, I), evtype(%s, create), %sinstant(I).",
+                        "initiated(%s, I) :- occured(%s, I), not holdsat(live, I), evtype(%s, %s), %sinstant(I).",
                         f.toString(),
                         e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
                         e.getName(),
+                        this.__eventTypeAbbr(e.getType()),
                         this.__generateVariableTypeGroundingRules(", ", event_type_map, type_map)
                     ))
                 );
             }
+        }
+        
+        return atoms.toArray(new Atom[] {});
+    }
+    
+    protected Atom[] _generateDissolutionEventRules(DissolutionEvent[] events) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+        
+        for(DissolutionEvent e: events) {
+            // For each event, build up a possible set of variables, then a type map
+            int counter = 0;
+            Hashtable<String, Type> event_type_map = new Hashtable<String, Type>();
+            ArrayList<Type> parameters = e.getParameters();
+            Iterator<Type> iter = parameters.iterator();
+            while (iter.hasNext()) {
+                Type t = iter.next();
+                event_type_map.put(String.format("VAR_%02d", counter++), t);
+            }
+            
+            atoms.add(
+                new Blank(String.format("terminated(X, I) :- occured(%s, I), holdsat(live, I), evtype(%s, %s), %sinstant(I), holdsat(X, I).",
+                    e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
+                    e.getName(),
+                    this.__eventTypeAbbr(e.getType()),
+                    this.__generateVariableTypeGroundingRules(", ", event_type_map)
+                ))
+            );
         }
         
         return atoms.toArray(new Atom[] {});

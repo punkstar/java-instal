@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import uk.ac.bath.cs.agents.instal.CreationEvent;
+import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.Event;
 import uk.ac.bath.cs.agents.instal.Generates;
@@ -26,6 +27,7 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateTimeSteps(int timesteps);
     abstract protected Atom[] _generateConcreteTypes(Domain d);
     abstract protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents);
+    abstract protected Atom[] _generateDissolutionEventRules(DissolutionEvent[] events);
     
 	public InstalASPTranslator(Institution instal_spec, Domain domain) {
 	    this._instal = instal_spec;
@@ -106,6 +108,12 @@ public abstract class InstalASPTranslator {
         this._addDivider();
         this._addComment("Creation rules..");
         for (Atom a: this._generateCreateEventRules(this._instal.getCreationEvents(), this._domain.getInitiallyFluents())) {
+            this._addItem(a);
+        }
+
+        this._addDivider();
+        this._addComment("Dissolution rules..");
+        for (Atom a: this._generateDissolutionEventRules(this._instal.getDissolutionEvents())) {
             this._addItem(a);
         }
         

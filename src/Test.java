@@ -1,9 +1,9 @@
 import uk.ac.bath.cs.agents.instal.CreationEvent;
+import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
 import uk.ac.bath.cs.agents.instal.ExogeneousEvent;
 import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
-import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
 import uk.ac.bath.cs.agents.instal.NormativeEvent;
@@ -64,6 +64,11 @@ public class Test {
         
         misuse.addParameter(handset);
         
+        // Dissolution event
+        DissolutionEvent start_again = new DissolutionEvent("start_again");
+        
+        start_again.addParameter(player);
+        
         inst.event(clock)
             .event(obtain)
             .event(download)
@@ -72,7 +77,8 @@ public class Test {
             .event(intShare)
             .event(intDownload)
             .event(transition)
-            .event(misuse);
+            .event(misuse)
+            .event(start_again);
         
         /** FLUENTS **/
         Fluent obtainChunk = new Fluent("obtainChunk");

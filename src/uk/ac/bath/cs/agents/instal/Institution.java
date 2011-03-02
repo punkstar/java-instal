@@ -75,6 +75,18 @@ public class Institution {
 	    return list.toArray(new CreationEvent[] {});
 	}
 	
+   public DissolutionEvent[] getDissolutionEvents() {
+        ArrayList<DissolutionEvent> list = new ArrayList<DissolutionEvent>();
+        
+        for(Event e: this.getEvents()) {
+            if (e.getType() == Event.TYPE_DISSOLUTION) {
+                list.add((DissolutionEvent) e);
+            }
+        }
+        
+        return list.toArray(new DissolutionEvent[] {});
+    }
+	
 	public Fluent[] getFluents() {
 		return this._fluents.toArray(new Fluent[] {});
 	}
