@@ -263,9 +263,10 @@ public class AnsProlog extends InstalASPTranslator {
                 
                 atoms.add(
                     new Blank(String.format(
-                        "initiated(%s, I) :- occured(%s, I), not holdsat(live, I), evtype(%s, %s), %sinstant(I).",
+                        "initiated(%s, I) :- occured(%s, I), not holdsat(live(%s), I), evtype(%s, %s), %sinstant(I).",
                         f.toString(),
                         e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
+                        this._instal.getName(),
                         e.getName(),
                         this.__eventTypeAbbr(e.getType()),
                         this.__generateVariableTypeGroundingRules(", ", event_type_map, type_map)
@@ -292,8 +293,9 @@ public class AnsProlog extends InstalASPTranslator {
             }
             
             atoms.add(
-                new Blank(String.format("terminated(X, I) :- occured(%s, I), holdsat(live, I), evtype(%s, %s), %sinstant(I), holdsat(X, I).",
+                new Blank(String.format("terminated(X, I) :- occurred(%s, I), holdsat(live(%s), I), evtype(%s, %s), %sinstant(I), holdsat(X, I).",
                     e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
+                    this._instal.getName(),
                     e.getName(),
                     this.__eventTypeAbbr(e.getType()),
                     this.__generateVariableTypeGroundingRules(", ", event_type_map)
