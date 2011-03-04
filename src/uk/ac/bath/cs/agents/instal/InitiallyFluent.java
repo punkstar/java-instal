@@ -15,7 +15,7 @@ public class InitiallyFluent {
     }
     
     public String definitionToString() {
-        return String.format("initally %s;\n", this._f.toString());
+        return String.format("initally %s;\n", this.toString());
     }
     
     public String toString() {

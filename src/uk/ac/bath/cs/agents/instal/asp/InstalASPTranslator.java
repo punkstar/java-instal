@@ -123,11 +123,11 @@ public abstract class InstalASPTranslator {
             this._addItem(a);
         }
         
-        this._addDivider();
-        this._addComment("Obligations..");
-        for (Atom a: this._generateObligations(this._instal.getObligations())) {
-            this._addItem(a);
-        }
+//        this._addDivider();
+//        this._addComment("Obligations..");
+//        for (Atom a: this._generateObligations(this._instal.getObligations())) {
+//            this._addItem(a);
+//        }
         
         this._addDivider();
         this._addComment("Timesteps..");
@@ -137,9 +137,9 @@ public abstract class InstalASPTranslator {
         }
         
         this._addDivider();
-        this._addComment("Kick everything off..");
+        this._addComment("Kick everything off.. (this is a hack atm)");
         this._addComment();
-        this._addItem(new Blank(String.format("ifluent(live(%s)).", this._instal.getName())));
+        this._addItem(new Blank(String.format("occurred(%s, i00).", this._instal.getCreationEvents()[0].getName())));
         
         return this;
 	}

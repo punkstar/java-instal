@@ -36,6 +36,14 @@ public abstract class Rule extends Conditional {
 		return this.__join(this._resultAtoms, this._resultAtomVariables, ", ");
 	}
 	
+	public ArrayList<Parameters> getResultAtoms() {
+	    return this._resultAtoms;
+	}
+	
+	public ArrayList<String[]> getResultAtomVariables() {
+	    return this._resultAtomVariables;
+	}
+	
 	public String[] getResultAtomsWithVariables() {
 	    String[] atoms = new String[this._resultAtoms.size()];
 	    
@@ -51,10 +59,13 @@ public abstract class Rule extends Conditional {
 	    
 	    for(int i = 0; i < this._resultAtoms.size(); i++) {
 	        Hashtable<String, Type> semi_map = this._resultAtoms.get(i).getParameterVariablesTypeMap(this._resultAtomVariables.get(i));
-	        Iterator<String> iter = semi_map.keySet().iterator();
-	        while (iter.hasNext()) {
-	            String key = iter.next();
-	            table.put(key, semi_map.get(key));
+	        
+	        if (semi_map != null) {
+	            Iterator<String> iter = semi_map.keySet().iterator();
+	            while (iter.hasNext()) {
+	                String key = iter.next();
+	                table.put(key, semi_map.get(key));
+	            }
 	        }
 	    }
 	    

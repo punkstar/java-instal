@@ -1,6 +1,6 @@
 package uk.ac.bath.cs.agents.instal;
 
-public class Condition {
+public class Condition implements Cloneable {
     protected boolean _condition;
     protected Fluent _fluent;
     protected String[] _variables;
@@ -36,5 +36,16 @@ public class Condition {
     
     public String[] getVariables() {
         return this._variables;
+    }
+    
+    public Condition clone() {
+        try {
+            return (Condition) super.clone();
+        } catch (CloneNotSupportedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return null;
     }
 }

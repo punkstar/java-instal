@@ -1,8 +1,11 @@
 package uk.ac.bath.cs.agents.instal.asp;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import uk.ac.bath.cs.agents.instal.Condition;
 import uk.ac.bath.cs.agents.instal.CreationEvent;
@@ -15,6 +18,7 @@ import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
 import uk.ac.bath.cs.agents.instal.Obligation;
+import uk.ac.bath.cs.agents.instal.Parameters;
 import uk.ac.bath.cs.agents.instal.Rule;
 import uk.ac.bath.cs.agents.instal.Terminates;
 import uk.ac.bath.cs.agents.instal.Type;
@@ -114,25 +118,40 @@ public class AnsProlog extends InstalASPTranslator {
         	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
         	Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
         	
+            // Generate our parameter constraints for the source event
+            ArrayList<String[]> resultAtomVariables = r.getResultAtomVariables();
+            StringBuilder conditionConstraints = new StringBuilder();
+            conditionConstraints.append(this.__generateParameterConstraints(r.getSourceEvent(), r.getSourceEventVariables()));
+            for (int k = 0; k < r.getResultAtoms().size(); k++) { 
+                conditionConstraints.append(this.__generateParameterConstraints(r.getResultAtoms().get(k), resultAtomVariables.get(k)));
+            }
+        	
             atoms.add(new Comment(""));
             atoms.add(new Comment(String.format("Translation of: %s", r.toString())));
             
             StringBuilder conditions = new StringBuilder();
             
-            for (int i = 0; i < r.getConditionsWithVariables().length; i++) {
-                conditions.append("holdsat(").append(r.getConditionsWithVariables()[i]).append(", I), ");
+            for (int i = 0; i < r.getConditionsTypeWithVariables().length; i++) {
+                Condition c = r.getConditionsTypeWithVariables()[i];
+                
+                if (c.isNegated()) {
+                    conditions.append("not ");
+                }
+                
+                conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
             }
             
             for (String s: r.getResultAtomsWithVariables()) {
             	
                 atoms.add(
                     new Blank(String.format(
-                        "initiated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
+                        "initiated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %s%sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
-                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map)
+                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map),
+                        conditionConstraints
                     ))
                 );
             }
@@ -151,8 +170,14 @@ public class AnsProlog extends InstalASPTranslator {
             
             StringBuilder conditions = new StringBuilder();
             
-            for (int i = 0; i < r.getConditionsWithVariables().length; i++) {
-                conditions.append("holdsat(").append(r.getConditionsWithVariables()[i]).append(", I), ");
+            for (int i = 0; i < r.getConditionsTypeWithVariables().length; i++) {
+                Condition c = r.getConditionsTypeWithVariables()[i];
+                
+                if (c.isNegated()) {
+                    conditions.append("not ");
+                }
+                
+                conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
             }
                         
             for (String s: r.getResultAtomsWithVariables()) {
@@ -160,14 +185,23 @@ public class AnsProlog extends InstalASPTranslator {
             	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
             	Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
             	
+                // Generate our parameter constraints for the source event
+                ArrayList<String[]> resultAtomVariables = r.getResultAtomVariables();
+                StringBuilder conditionConstraints = new StringBuilder();
+                conditionConstraints.append(this.__generateParameterConstraints(r.getSourceEvent(), r.getSourceEventVariables()));
+                for (int k = 0; k < r.getResultAtoms().size(); k++) { 
+                    conditionConstraints.append(this.__generateParameterConstraints(r.getResultAtoms().get(k), resultAtomVariables.get(k)));
+                }
+            	
                 atoms.add(
                     new Blank(String.format(
-                        "terminated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %sinstant(I).",
+                        "terminated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %s%sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
-                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map)
+                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map),
+                        conditionConstraints
                     ))
                 );
             }
@@ -182,32 +216,45 @@ public class AnsProlog extends InstalASPTranslator {
     protected Atom[] _generateGenerateRules(Generates[] rules) {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
         
-        for (Rule r: rules) {            
+        for (Rule r: rules) {  
+            atoms.add(new Comment(""));
+            atoms.add(new Comment(String.format("Translation of %s", r.toString())));
+            
             StringBuilder conditions = new StringBuilder();
             
-            for (int i = 0; i < r.getConditionsWithVariables().length; i++) {
-               Condition c = r.getConditions()[i];
-               
-               if (c.isNegated()) {
-                   conditions.append("not ");
-               }
-               
-               conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
+            for (int i = 0; i < r.getConditionsTypeWithVariables().length; i++) {
+                Condition c = r.getConditionsTypeWithVariables()[i];
+                
+                if (c.isNegated()) {
+                    conditions.append("not ");
+                }
+                
+                conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
             }
             
             for (String s: r.getResultAtomsWithVariables()) {
             	Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
             	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
+            	Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
+            	
+            	// Generate our parameter constraints for the source event
+                ArrayList<String[]> resultAtomVariables = r.getResultAtomVariables();
+            	StringBuilder conditionConstraints = new StringBuilder();
+            	conditionConstraints.append(this.__generateParameterConstraints(r.getSourceEvent(), r.getSourceEventVariables()));
+            	for (int k = 0; k < r.getResultAtoms().size(); k++) { 
+            	    conditionConstraints.append(this.__generateParameterConstraints(r.getResultAtoms().get(k), resultAtomVariables.get(k)));
+            	}
             	
                 atoms.add(
                     new Blank(String.format(
-                        "occurred(%s, I) :- occurred(%s, I), %sholdsat(pow(%s, %s), I), %sinstant(I).",
+                        "occurred(%s, I) :- occurred(%s, I), %sholdsat(pow(%s, %s), I), %s%sinstant(I).",
                         s,
                         r._getSourceEventWithVariables(),
                         (conditions.toString().length() > 0) ? conditions : "",
                         this._instal.getName(),
                         s,
-                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map)
+                        this.__generateVariableTypeGroundingRules(", ", source_type_map, conditions_type_map, result_type_map),
+                        conditionConstraints.toString()
                     ))
                 );
             }
@@ -245,6 +292,8 @@ public class AnsProlog extends InstalASPTranslator {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
         
         for(InitiallyFluent f: fluents) {
+            atoms.add(new Comment(""));
+            atoms.add(new Comment(String.format("Initiation of %s for creation events", f.toString())));
             Hashtable<String, Type> type_map = new Hashtable<String, Type>();
             
             if (f.hasUngroundedVariables()) {
@@ -317,6 +366,7 @@ public class AnsProlog extends InstalASPTranslator {
             
             String type_map_resolved = this.__generateVariableTypeGroundingRules(", ", act_type_map, before_type_map, otherwise_type_map);
             
+            atoms.add(new Comment(""));
             atoms.add(new Comment(String.format("Translation of %s", o.toString())));
             
             String act = o.getAct().asVariablesToString(o.getActVars());
@@ -324,7 +374,7 @@ public class AnsProlog extends InstalASPTranslator {
             String otherwise = o.getOtherwise().asVariablesToString(o.getOtherwiseVars());
             
             atoms.add(new Blank(String.format(
-                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I)",
+                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I).",
                 act,
                 before,
                 otherwise,
@@ -333,7 +383,7 @@ public class AnsProlog extends InstalASPTranslator {
             )));
             
             atoms.add(new Blank(String.format(
-                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I)",
+                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I).",
                 act,
                 before,
                 otherwise,
@@ -388,6 +438,31 @@ public class AnsProlog extends InstalASPTranslator {
     	}
     	
     	return builder.toString();
+    }
+    
+    private String __generateParameterConstraints(Parameters p, String[] variables) {
+        if (!p.hasParameterConditions()) {
+            return "";
+        }
+        
+        // Generate our parameter constraints for the source event
+        StringBuilder conditionConstraints = new StringBuilder();
+        ArrayList<String[]> constraints = p.getParameterConstraints(variables);
+        Hashtable<String, Type> type_map = p.getParameterVariablesTypeMap(variables);
+        
+        for (int j = 0; j < constraints.size(); j++) {
+            // A tuple of { [param], [op], [param] }
+            String[] constraint = constraints.get(j);
+            conditionConstraints.append(this.__typeToStringRepresentation(type_map.get(constraint[0]))).append("(").append(constraint[0]).append(") ")
+                                .append(constraint[1]).append(" ")
+                                .append(this.__typeToStringRepresentation(type_map.get(constraint[2]))).append("(").append(constraint[2]).append(") ");
+        }
+        
+        if (conditionConstraints.length() > 0) {
+            conditionConstraints.append(", ");
+        }
+        
+        return conditionConstraints.toString();
     }
     
     private String __typeToStringRepresentation(Type t) {

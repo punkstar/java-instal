@@ -31,4 +31,8 @@ public abstract class Atom {
 	public int getType() {
 	    return this._type;
 	}
+	
+	public boolean isEvent() {
+	    return this._atom == Atom.ATOM_EVENT;
+	}
 }

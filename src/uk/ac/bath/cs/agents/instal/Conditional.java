@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
-public abstract class Conditional extends Atom {
+public abstract class Conditional extends Atom implements Cloneable {
 	protected ArrayList<Condition> _conditions = new ArrayList<Condition>();
 	protected ArrayList<String[]> _conditionsVariables = new ArrayList<String[]>();
 	
@@ -39,6 +39,16 @@ public abstract class Conditional extends Atom {
         }
         
         return atoms;
+    }
+    
+    public Condition[] getConditionsTypeWithVariables() {
+        Condition[] conditions = new Condition[this._conditions.size()];
+        
+        for (int i = 0; i < this._conditions.size(); i++) {
+            conditions[i] = this._conditions.get(i).clone().setVariables(this._conditionsVariables.get(i));
+        }
+        
+        return conditions;
     }
     
     public Condition[] getConditions() {

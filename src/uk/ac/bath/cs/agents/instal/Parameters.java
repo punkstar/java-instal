@@ -7,6 +7,8 @@ import java.util.Iterator;
 
 public abstract class Parameters extends Atom implements Cloneable {
 	ArrayList<Type> _parameters = new ArrayList<Type>();
+	ArrayList<String> _parameterNames = new ArrayList<String>();
+	ArrayList<String[]> _parameterConstraintTuples = new ArrayList<String[]>();
 	ArrayList<String> _variables = null;
 	
 	public Parameters(String name, int atom, int type) {
@@ -22,7 +24,23 @@ public abstract class Parameters extends Atom implements Cloneable {
 	}
 	
 	public Parameters addParameter(Type t) {
-		this._parameters.add(t); return this;
+		return this.addParameter(t, null);
+	}
+	
+	public Parameters addParameter(Type t, String name) {
+	    this._parameters.add(t);
+	    this._parameterNames.add(name);
+	    return this;
+	}
+	
+	public boolean hasParameterConditions() {
+	    return this._parameterConstraintTuples.size() > 0;
+	}
+	
+	public Parameters constraint(String x, String operation, String y) {
+	    String[] tuple = new String[] { x, operation, y };
+	    this._parameterConstraintTuples.add(tuple);
+	    return this;
 	}
 	
 	public Parameters setParameters(ArrayList<Type> types) {
@@ -71,12 +89,91 @@ public abstract class Parameters extends Atom implements Cloneable {
 	    return table;
 	}
 	
+	public Hashtable<String, Type> getParameterNameTypeMap() {
+	    Hashtable<String, Type> type_map = new Hashtable<String, Type>();
+	    
+	    for (int i = 0; i < this._parameterNames.size(); i++) {
+	        String name = this._parameterNames.get(i);
+	        
+	        if (name != null) {
+	            type_map.put(name, this._parameters.get(i));
+	        }
+	    }
+	    
+	    return type_map;
+	}
+	
+	/**
+	 * For each constraint tuple we have, swap in the signature parameter with our variables, in the argument.
+	 * 
+	 * @param variables
+	 * @return
+	 */
+	public ArrayList<String[]> getParameterConstraints(String[] variables) {
+	    ArrayList<String[]> constraints = new ArrayList<String[]>();
+	    
+	    for (int i = 0; i < this._parameterConstraintTuples.size(); i++) {
+	        try {
+	            String[] tuple = this._parameterConstraintTuples.get(i).clone();
+	            
+    	        tuple[0] =  variables[this._getPositionOfParameterName(tuple[0])];
+    	        tuple[2] =  variables[this._getPositionOfParameterName(tuple[2])];
+	        
+    	        constraints.add(tuple);
+	        } catch (Exception e) {
+	            System.err.println("Exception, getParameterConstraints(): " + e.getMessage());
+	        }
+	    }
+	    
+	    return constraints;
+	}
+	
+	protected int _getPositionOfParameterName(String name) throws Exception {
+	    for (int i = 0; i < this._parameterNames.size(); i++) {
+	        if (this._parameterNames.get(i).equals(name)) {
+	            return i;
+	        }
+	    }
+	    
+	    throw new Exception("Could not find parameter constraint with name: " + name);
+	}
+	
+	protected int _getPositionOfVariableName(String name) {
+	    for (int i = 0; i < this._variables.size(); i++) {
+	        if (this._variables.get(i).equals(name)) {
+	            return i;
+	        }
+	    }
+	    
+	    return -1;
+	}
+	
     public String toString() {
     	return String.format(
-    		"%s%s",
+    		"%s%s%s",
     		this._name.toString(),
-    		this._parametersWithParenthesisToString()
+    		this._parametersWithParenthesisToString(),
+    		this.parameterConditionsToString()
     	);
+    }
+    
+    public String parameterConditionsToString() {
+        StringBuilder builder = new StringBuilder();
+        Iterator<String[]> iter = this._parameterConstraintTuples.iterator();
+        while (iter.hasNext()) {
+            String[] type = iter.next();
+            
+            builder.append(" ")
+                   .append(type[0]).append(" ")
+                   .append(type[1]).append(" ")
+                   .append(type[2]);
+        }
+        
+        if (builder.length() > 0) {
+            builder.insert(0, " where");
+        }
+        
+        return builder.toString();
     }
     
     public String asVariablesToString(String[] variables) {
@@ -108,7 +205,16 @@ public abstract class Parameters extends Atom implements Cloneable {
     }
     
     protected String _parametersToString() {
-        return this.__join(this._parameters, ", ");
+        ArrayList<String> namePrefixedParameters = new ArrayList<String>();
+        for (int i = 0; i < this._parameters.size(); i++) {
+            String param = this._parameters.get(i).toString();
+            if (this._parameterNames.get(i) != null) {
+                String name = this._parameterNames.get(i);
+                param = name + ":" + param;
+            }
+            namePrefixedParameters.add(param);
+        }
+        return this.__join(namePrefixedParameters, ", ");
     }
     
     protected String _variablesToString(String[] variables) {

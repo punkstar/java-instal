@@ -1,6 +1,6 @@
 package uk.ac.bath.cs.agents.instal;
 
-public class Obligation extends Atom {
+public class Obligation extends Parameters {
     protected Event _act, _before, _otherwise;
     protected String[] _actVars, _beforeVars, _otherwiseVars;
 
@@ -55,7 +55,14 @@ public class Obligation extends Atom {
     
     public String toString() {
         return String.format(
-            "obl(%s, %s, %s);\n",
+            "%s;\n",
+            this.asVariablesToString(new String[] {})
+        );
+    }
+    
+    public String asVariablesToString(String[] vars) {
+        return String.format(
+            "obl(%s, %s, %s)",
             this._act.asVariablesToString(this._actVars),
             this._before.asVariablesToString(this._beforeVars),
             this._otherwise.asVariablesToString(this._otherwiseVars)
