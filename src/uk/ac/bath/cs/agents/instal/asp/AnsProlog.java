@@ -70,26 +70,25 @@ public class AnsProlog extends InstalASPTranslator {
 	 * @TODO Check that creation events should actually be listed here.
 	 */
 	protected Atom[] _generateEvents(Event[] events) {
-	    int atoms_per_event = 7;
-	    Atom[] atoms = new Atom[events.length*atoms_per_event];
+	    ArrayList<Atom> atoms = new ArrayList<Atom>();
         
         for (int i = 0; i < events.length; i++) {
             Event e = events[i];
             
-            atoms[i*atoms_per_event] = new Comment(String.format("Event: %s (Type: %s)", e.getName().toString(), this.__eventTypeAbbr(e.getType())));
+            atoms.add(new Comment(String.format("Event: %s (Type: %s)", e.getName().toString(), this.__eventTypeAbbr(e.getType()))));
             
-            atoms[i*atoms_per_event+1] = new Blank(String.format("event(%s).", e.getName().toString()));
-            atoms[i*atoms_per_event+2] = new Blank(String.format("evtype(%s, %s).", e.getName().toString(), this.__eventTypeAbbr(e.getType())));
+            atoms.add(new Blank(String.format("event(%s).", e.getName().toString())));
+            atoms.add(new Blank(String.format("evtype(%s, %s).", e.getName().toString(), this.__eventTypeAbbr(e.getType()))));
             // @FIXME This is evil and breaks encapsulation
-            atoms[i*atoms_per_event+3] = new Blank(String.format("evinst(%s, %s).", e.getName().toString(), this._instal.getName()));
+            atoms.add(new Blank(String.format("evinst(%s, %s).", e.getName().toString(), this._instal.getName())));
             
-            atoms[i*atoms_per_event+4] = new Blank(String.format("event(viol(%s)).", e.getName().toString()));
-            atoms[i*atoms_per_event+5] = new Blank(String.format("evtype(viol(%s), %s).", e.getName().toString(), this.__eventTypeAbbr(Event.TYPE_VIOLATION)));
+            atoms.add(new Blank(String.format("event(viol(%s)).", e.getName().toString())));
+            atoms.add(new Blank(String.format("evtype(viol(%s), %s).", e.getName().toString(), this.__eventTypeAbbr(Event.TYPE_VIOLATION))));
             // @FIXME This is evil and breaks encapsulation
-            atoms[i*atoms_per_event+6] = new Blank(String.format("evinst(viol(%s), %s).", e.getName().toString(), this._instal.getName()));
+            atoms.add(new Blank(String.format("evinst(viol(%s), %s).", e.getName().toString(), this._instal.getName())));
         }
     
-        return atoms;
+        return atoms.toArray(new Atom[] {});
 	}
 	
 	private String __eventTypeAbbr(int type) {
@@ -141,8 +140,14 @@ public class AnsProlog extends InstalASPTranslator {
                 conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
             }
             
-            for (String s: r.getResultAtomsWithVariables()) {
-            	
+            for (int i = 0 ; i < r.getResultAtoms().size(); i++) {
+                Parameters a = r.getResultAtoms().get(i);
+                
+                String s = a.asVariablesToString(r.getResultAtomVariables().get(i));
+                if (a.getType() == Fluent.TYPE_POWER) {
+                    s = String.format("pow(%s, %s%s)", this._instal.getName(), a.getName(), a.getVariablesWithParenthesisToString(r.getResultAtomVariables().get(i)));
+                }
+                
                 atoms.add(
                     new Blank(String.format(
                         "initiated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %s%sinstant(I).",
@@ -179,12 +184,12 @@ public class AnsProlog extends InstalASPTranslator {
                 
                 conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
             }
-                        
-            for (String s: r.getResultAtomsWithVariables()) {
-            	Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
-            	Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
-            	Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
-            	
+             
+            for (int i = 0 ; i < r.getResultAtoms().size(); i++) {
+                Hashtable<String, Type> source_type_map = r.getSourceEvent().getParameterVariablesTypeMap(r.getSourceEventVariables());
+                Hashtable<String, Type> conditions_type_map = r.getConditionalVariablesTypeMap();
+                Hashtable<String, Type> result_type_map = r.getResultAtomsTypeMap();
+                
                 // Generate our parameter constraints for the source event
                 ArrayList<String[]> resultAtomVariables = r.getResultAtomVariables();
                 StringBuilder conditionConstraints = new StringBuilder();
@@ -192,7 +197,14 @@ public class AnsProlog extends InstalASPTranslator {
                 for (int k = 0; k < r.getResultAtoms().size(); k++) { 
                     conditionConstraints.append(this.__generateParameterConstraints(r.getResultAtoms().get(k), resultAtomVariables.get(k)));
                 }
-            	
+                
+                Parameters a = r.getResultAtoms().get(i);
+                
+                String s = a.asVariablesToString(r.getResultAtomVariables().get(i));
+                if (a.getType() == Fluent.TYPE_POWER) {
+                    s = String.format("pow(%s, %s%s)", this._instal.getName(), a.getName(), a.getVariablesWithParenthesisToString(r.getResultAtomVariables().get(i)));
+                }
+                
                 atoms.add(
                     new Blank(String.format(
                         "terminated(%s, I) :- occurred(%s, I), %sholdsat(live(%s), I), %s%sinstant(I).",

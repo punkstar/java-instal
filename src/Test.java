@@ -56,7 +56,7 @@ public class Test {
 	    bid.addParameter(bidder).addParameter(auct);
 	    conf.addParameter(auct).addParameter(bidder);
 	    sold.addParameter(auct).addParameter(bidder);
-	    unsold.addParameter(auct, "D").addParameter(bidder, "E").constraint("D", "=", "E");
+	    unsold.addParameter(auct, "D").addParameter(bidder, "E").constraint("D", "==", "E");
 	    
 	    DissolutionEvent badgov = new DissolutionEvent("badgov");
 	    DissolutionEvent finished = new DissolutionEvent("finished");
