@@ -1,9 +1,8 @@
 package uk.ac.bath.cs.agents.instal;
 
-import org.ahmadsoft.ropes.Rope;
-import org.ahmadsoft.ropes.RopeBuilder;
+import java.io.Serializable;
 
-public abstract class Atom {
+public abstract class Atom implements Serializable {
 	public static int ATOM_EVENT = 2;
 	public static int ATOM_FLUENT = 3;
 	public static int ATOM_GENERATES = 4;

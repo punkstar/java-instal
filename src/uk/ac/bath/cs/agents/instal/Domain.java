@@ -1,5 +1,6 @@
 package uk.ac.bath.cs.agents.instal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -10,7 +11,7 @@ import java.util.Iterator;
  * @author Nick Jones <nj210@bath.ac.uk>
  *
  */
-public class Domain {
+public class Domain implements Serializable {
     protected ArrayList<InitiallyFluent> _initially = new ArrayList<InitiallyFluent>();
     protected Hashtable<Type, ArrayList<String>> _concreteTypes = new Hashtable<Type, ArrayList<String>>();
     

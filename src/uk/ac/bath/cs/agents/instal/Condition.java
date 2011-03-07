@@ -1,6 +1,8 @@
 package uk.ac.bath.cs.agents.instal;
 
-public class Condition implements Cloneable {
+import java.io.Serializable;
+
+public class Condition implements Cloneable, Serializable {
     protected boolean _condition;
     protected Fluent _fluent;
     protected String[] _variables;

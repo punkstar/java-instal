@@ -1,9 +1,10 @@
 package uk.ac.bath.cs.agents.instal;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Institution {
+public class Institution implements Serializable {
 	//protected RopeBuilder _rope = new RopeBuilder();
 	//protected Rope _name;
 	protected String _name;

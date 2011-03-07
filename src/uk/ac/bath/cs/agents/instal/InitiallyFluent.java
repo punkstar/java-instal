@@ -1,8 +1,9 @@
 package uk.ac.bath.cs.agents.instal;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 
-public class InitiallyFluent {
+public class InitiallyFluent implements Serializable {
     protected Fluent _f;
     
     public InitiallyFluent(Fluent f, String[] vars) {

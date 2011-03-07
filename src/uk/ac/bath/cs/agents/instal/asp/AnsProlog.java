@@ -91,11 +91,17 @@ public class AnsProlog extends InstalASPTranslator {
         return atoms.toArray(new Atom[] {});
 	}
 	
+	/**
+	 * As per Marina's instructions, the creation event has the exogenous event type.
+	 * 
+	 * @param type
+	 * @return
+	 */
 	private String __eventTypeAbbr(int type) {
 	    switch (type) {
 	        case Event.TYPE_CREATION:
-	            return "create";
-	        case Event.TYPE_EXOGENEOUS:
+	            return "ex";
+	        case Event.TYPE_EXOGENOUS:
 	            return "ex";
 	        case Event.TYPE_NORMATIVE:
 	            return "inst";

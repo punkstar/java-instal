@@ -2,7 +2,7 @@ package uk.ac.bath.cs.agents.instal;
 
 
 public abstract class Event extends Parameters {
-	public static final int TYPE_EXOGENEOUS  = 2;
+	public static final int TYPE_EXOGENOUS   = 2;
 	public static final int TYPE_NORMATIVE   = 3;
 	public static final int TYPE_CREATION    = 4;
 	public static final int TYPE_VIOLATION   = 5;
@@ -18,7 +18,7 @@ public abstract class Event extends Parameters {
     
     protected String _typeToString(int type) {
     	switch (type) {
-    	case TYPE_EXOGENEOUS:
+    	case TYPE_EXOGENOUS:
     		return "exogenous";
     	case TYPE_NORMATIVE:
     		return "normative";

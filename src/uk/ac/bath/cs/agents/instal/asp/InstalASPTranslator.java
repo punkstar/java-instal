@@ -74,6 +74,7 @@ public abstract class InstalASPTranslator {
             this._addItem(a);
         }
 
+        // TODO Remove this.. domain files don't contain initially fluents
         this._addDivider();
         this._addComment("Initial domain fluents..");
         this._addComment();
