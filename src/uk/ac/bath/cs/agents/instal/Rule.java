@@ -23,7 +23,7 @@ public abstract class Rule extends Conditional {
 	}
 	
 	public Rule result(Parameters e, String ... args) {
-		this._resultAtomVariables.add(args);
+	    this._resultAtomVariables.add(args);
 		this._resultAtoms.add(e);
 		return this;
 	}
@@ -33,7 +33,11 @@ public abstract class Rule extends Conditional {
 	}
 	
 	protected String _resultAtomsToString() {
-		return this.__join(this._resultAtoms, this._resultAtomVariables, ", ");
+	    if (this._resultAtoms != null && this._resultAtomVariables != null && this._resultAtoms.size() > 0 && this._resultAtomVariables.size() > 0) {
+	        return this.__join(this._resultAtoms, this._resultAtomVariables, ", ");
+	    } else {
+	        return "";
+	    }
 	}
 	
 	public ArrayList<Parameters> getResultAtoms() {
@@ -45,20 +49,29 @@ public abstract class Rule extends Conditional {
 	}
 	
 	public String[] getResultAtomsWithVariables() {
-	    String[] atoms = new String[this._resultAtoms.size()];
+	    ArrayList<String> atoms = new ArrayList<String>(this._resultAtoms.size());
 	    
 	    for (int i = 0; i < this._resultAtoms.size(); i++) {
-	        atoms[i] = this._resultAtoms.get(i).asVariablesToString(this._resultAtomVariables.get(i));
+	        Parameters a = this._resultAtoms.get(i);
+	        
+	        if (a != null) {
+	            atoms.add(a.asVariablesToString(this._resultAtomVariables.get(i)));
+	        }
 	    }
 	    
-	    return atoms;
+	    return atoms.toArray(new String[] {});
 	}
 	
 	public Hashtable<String, Type> getResultAtomsTypeMap() {
 	    Hashtable<String, Type> table = new Hashtable<String, Type>();
 	    
 	    for(int i = 0; i < this._resultAtoms.size(); i++) {
-	        Hashtable<String, Type> semi_map = this._resultAtoms.get(i).getParameterVariablesTypeMap(this._resultAtomVariables.get(i));
+	        Parameters p = this._resultAtoms.get(i);
+	        String[] vars = this._resultAtomVariables.get(i);
+	        
+	        if (p == null || vars == null) continue;
+	        
+	        Hashtable<String, Type> semi_map = p.getParameterVariablesTypeMap(vars);
 	        
 	        if (semi_map != null) {
 	            Iterator<String> iter = semi_map.keySet().iterator();
@@ -85,10 +98,17 @@ public abstract class Rule extends Conditional {
 	}
     
     private String __join(AbstractCollection<Parameters> s, AbstractCollection<String[]> v, String delimiter) {
-        if (s == null || s.isEmpty()) return "";
+        if (s == null || s.isEmpty() || s.size() == 0 || v == null || v.isEmpty() || v.size() ==  0) return "";
         Iterator<Parameters> iter = s.iterator();
         Iterator<String[]> iter_v = v.iterator();
-        StringBuilder builder = new StringBuilder(iter.next().asVariablesToString(iter_v.next()));
+        
+        Parameters first_s = iter.next();
+        String[] first_v = iter_v.next();
+        
+        if (first_s == null || first_v == null) return "";
+        
+        StringBuilder builder = new StringBuilder(first_s.asVariablesToString(first_v));
+        
         while( iter.hasNext() && iter_v.hasNext() )
         {
             builder.append(delimiter).append(iter.next().asVariablesToString(iter_v.next()));

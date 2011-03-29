@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
@@ -10,6 +13,7 @@ import uk.ac.bath.cs.agents.instal.NormativeEvent;
 import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Terminates;
 import uk.ac.bath.cs.agents.instal.Type;
+import uk.ac.bath.cs.agents.instal.ViolationEvent;
 import uk.ac.bath.cs.agents.instal.asp.AnsProlog;
 
 public class Test {

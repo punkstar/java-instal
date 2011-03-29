@@ -83,7 +83,9 @@ public abstract class Parameters extends Atom implements Cloneable {
 	            continue;
 	        }
 	        
-	        table.put(variables[i], t);
+	        if (variables[i] != null) {
+	            table.put(variables[i], t);
+	        }
 	    }
 	    
 	    return table;
@@ -193,7 +195,7 @@ public abstract class Parameters extends Atom implements Cloneable {
     }
     
     public String getVariablesWithParenthesisToString(String[] variables) {
-    	if (variables.length > 0) {
+    	if (variables != null && variables.length > 0) {
     		return String.format("(%s)", this._variablesToString(variables));
     	}
     	

@@ -69,6 +69,8 @@ public abstract class Conditional extends Atom implements Cloneable {
             Condition condition = conditions.next();
             Fluent f = condition.getFluent();
             
+            if (f == null || condition == null) continue;
+            
             // Join the tables
             Hashtable<String, Type> semi_table =  f.getParameterVariablesTypeMap(condition.getVariables());
             

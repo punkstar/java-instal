@@ -146,6 +146,8 @@ public class AnsProlog extends InstalASPTranslator {
             for (int i = 0 ; i < r.getResultAtoms().size(); i++) {
                 Parameters a = r.getResultAtoms().get(i);
                 
+                if (a == null || r == null) continue;
+                
                 String s = a.asVariablesToString(r.getResultAtomVariables().get(i));
                 if (a.getType() == Fluent.TYPE_POWER) {
                     s = String.format("pow(%s, %s%s)", this._instal.getName(), a.getName(), a.getVariablesWithParenthesisToString(r.getResultAtomVariables().get(i)));
@@ -389,7 +391,7 @@ public class AnsProlog extends InstalASPTranslator {
             String otherwise = o.getOtherwise().asVariablesToString(o.getOtherwiseVars());
             
             atoms.add(new Blank(String.format(
-                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I).",
+                "terminated(obl(%s, %s, %s), I) :- occurred(%s, I), %sinstant(I).",
                 act,
                 before,
                 otherwise,
@@ -398,7 +400,7 @@ public class AnsProlog extends InstalASPTranslator {
             )));
             
             atoms.add(new Blank(String.format(
-                "terminated(obl(%s, %s, %s), I) :- occured(%s, I), %sinstant(I).",
+                "terminated(obl(%s, %s, %s), I) :- occurred(%s, I), %sinstant(I).",
                 act,
                 before,
                 otherwise,
@@ -456,7 +458,7 @@ public class AnsProlog extends InstalASPTranslator {
     }
     
     private String __generateParameterConstraints(Parameters p, String[] variables) {
-        if (!p.hasParameterConditions()) {
+        if (p == null || !p.hasParameterConditions()) {
             return "";
         }
         
