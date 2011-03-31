@@ -1,6 +1,3 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-
 import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
@@ -9,11 +6,11 @@ import uk.ac.bath.cs.agents.instal.Fluent;
 import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
+import uk.ac.bath.cs.agents.instal.NoninertialFluent;
 import uk.ac.bath.cs.agents.instal.NormativeEvent;
 import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Terminates;
 import uk.ac.bath.cs.agents.instal.Type;
-import uk.ac.bath.cs.agents.instal.ViolationEvent;
 import uk.ac.bath.cs.agents.instal.asp.AnsProlog;
 
 public class Test {
@@ -360,6 +357,10 @@ public class Test {
 	    
 	    onlybidder.addParameter(bidder);
 	    
+	    NoninertialFluent nif1 = new NoninertialFluent("first_nif", "A", "B");
+	    
+	    nif1.addParameter(bidder).addParameter(bidder).condition(onlybidder);
+	    
 	    inst.type(bidder)
 	        .type(auct)
 	        .event(priceto)
@@ -394,7 +395,8 @@ public class Test {
 	        .initially(priceto.perm().initially())
 	        .initially(biddl.perm().initially())
 	        .initially(bidto.perm().initially())
-	        .initially(desto.perm().initially());
+	        .initially(desto.perm().initially())
+	        .noninertial(nif1);
 	    
 	    /**
 	     * Phase 1: Pricing
