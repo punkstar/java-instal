@@ -18,6 +18,7 @@ public class Institution implements Serializable {
     protected ArrayList<Terminates> _terminates = new ArrayList<Terminates>();
     protected ArrayList<InitiallyFluent> _initially = new ArrayList<InitiallyFluent>();
     protected ArrayList<Obligation> _obligations = new ArrayList<Obligation>();
+    protected ArrayList<NoninertialFluent> _noninertials = new ArrayList<NoninertialFluent>();
 	
 	public Institution(String name, int time_steps) {
 		//this._name = this._rope.build(name.toCharArray());
@@ -55,6 +56,10 @@ public class Institution implements Serializable {
 	
 	public Institution obl(Obligation o) {
 	    this._obligations.add(o); return this;
+	}
+	
+	public Institution noninertial(NoninertialFluent f) {
+	    this._noninertials.add(f); return this;
 	}
 	
 	public String getName() {
@@ -115,6 +120,10 @@ public class Institution implements Serializable {
 	
 	public Obligation[] getObligations() {
 	    return this._obligations.toArray(new Obligation[] {});
+	}
+	
+	public NoninertialFluent[] getNoninertialFluents() {
+	    return this._noninertials.toArray(new NoninertialFluent[] {});
 	}
 	
 	public int getTimeSteps() {

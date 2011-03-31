@@ -12,20 +12,9 @@ import java.util.Iterator;
  *
  */
 public class Domain implements Serializable {
-    protected ArrayList<InitiallyFluent> _initially = new ArrayList<InitiallyFluent>();
     protected Hashtable<Type, ArrayList<String>> _concreteTypes = new Hashtable<Type, ArrayList<String>>();
     
     public Domain() {}
-    
-    /**
-     * Add a fluent that will be initiated.
-     * 
-     * @param f
-     * @return
-     */
-    public Domain initially(InitiallyFluent f) {
-        this._initially.add(f); return this;
-    }
     
     /**
      * Add a concrete implementation of a type to be used when grounding rules.
@@ -42,15 +31,6 @@ public class Domain implements Serializable {
         this._concreteTypes.get(t).add(s);
         
         return this;
-    }
-    
-    /**
-     * Get an array of the fluents to be initiated at the start.
-     * 
-     * @return
-     */
-    public InitiallyFluent[] getInitiallyFluents() {
-        return this._initially.toArray(new InitiallyFluent[] {});
     }
     
     /**
@@ -78,10 +58,6 @@ public class Domain implements Serializable {
     
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        
-        for (InitiallyFluent i: this.getInitiallyFluents()) {
-            builder.append("initially ").append(i.toString()).append(";\n");
-        }
         
         Iterator<Type> iter = this._concreteTypes.keySet().iterator();
         while(iter.hasNext()) {
