@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Institution implements Serializable {
-	//protected RopeBuilder _rope = new RopeBuilder();
-	//protected Rope _name;
 	protected String _name;
     protected int _timeSteps;
 	
@@ -21,9 +19,16 @@ public class Institution implements Serializable {
     protected ArrayList<NoninertialFluent> _noninertials = new ArrayList<NoninertialFluent>();
 	
 	public Institution(String name, int time_steps) {
-		//this._name = this._rope.build(name.toCharArray());
-		this._name = name;
-	    this._timeSteps = time_steps;
+	    this.setName(name);
+	    this.setTimesteps(time_steps);
+	}
+	
+	public void setName(String name) {
+	    this._name = name;
+	}
+	
+	public void setTimesteps(int steps) {
+	    this._timeSteps = steps;
 	}
 	
 	public Institution type(Type t) {
