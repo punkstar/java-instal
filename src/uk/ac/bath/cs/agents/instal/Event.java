@@ -1,6 +1,5 @@
 package uk.ac.bath.cs.agents.instal;
 
-
 public abstract class Event extends Parameters {
 	public static final int TYPE_EXOGENOUS   = 2;
 	public static final int TYPE_NORMATIVE   = 3;

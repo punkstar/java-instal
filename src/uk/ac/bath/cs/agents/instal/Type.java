@@ -2,8 +2,6 @@ package uk.ac.bath.cs.agents.instal;
 
 import java.util.ArrayList;
 
-import org.ahmadsoft.ropes.Rope;
-
 public class Type extends Atom {
 	//protected ArrayList<Rope> _instances = new ArrayList<Rope>();
 	protected ArrayList<String> _instances = new ArrayList<String>();

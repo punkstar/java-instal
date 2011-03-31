@@ -3,21 +3,19 @@ package uk.ac.bath.cs.agents.instal;
 import java.io.Serializable;
 
 public abstract class Atom implements Serializable {
-	public static int ATOM_EVENT = 2;
-	public static int ATOM_FLUENT = 3;
-	public static int ATOM_GENERATES = 4;
-	public static int ATOM_CONSEQUENCE = 5;
-	public static int ATOM_TYPE = 6;
-	public static int ATOM_OBLIGATION = 7;
+    public static final int ATOM_EVENT = 2;
+	public static final int ATOM_FLUENT = 3;
+	public static final int ATOM_GENERATES = 4;
+	public static final int ATOM_CONSEQUENCE = 5;
+	public static final int ATOM_TYPE = 6;
+	public static final int ATOM_OBLIGATION = 7;
+	public static final int ATOM_NONINERTIAL = 8;
 	
-	//protected RopeBuilder _rope = new RopeBuilder();
 	protected int _atom;
 	protected int _type;
-	//protected Rope _name;
 	protected String _name;
 	
 	protected Atom(String name, int atom, int type) {
-		//this._name = this._rope.build(name.toCharArray());
 		this._name = name;
 	    this._atom = atom;
 		this._type = type;

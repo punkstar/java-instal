@@ -14,6 +14,7 @@ import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
+import uk.ac.bath.cs.agents.instal.NoninertialFluent;
 import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Parameters;
 import uk.ac.bath.cs.agents.instal.Rule;
@@ -61,6 +62,36 @@ public class AnsProlog extends InstalASPTranslator {
 	        return new Atom[] { new Comment("None") };
 	    }
 	}
+	
+   protected Atom[] _generateNoninertialRules(NoninertialFluent[] fluents) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+        
+        for (NoninertialFluent f : fluents) {
+            Hashtable<String, Type> fluent_type_map = f.getParameterVariablesTypeMap(f.getParameterVariables());
+            Hashtable<String, Type> conditions_type_map = f.getConditions().getConditionalVariablesTypeMap();
+            
+            StringBuilder conditions = new StringBuilder();
+            for (int i = 0; i < f.getConditions().getConditionsTypeWithVariables().length; i++) {
+                Condition c = f.getConditions().getConditionsTypeWithVariables()[i];
+                
+                if (c.isNegated()) {
+                    conditions.append("not ");
+                }
+                
+                conditions.append("holdsat(").append(c.asVariablesToString()).append(", I), ");
+            }
+            
+            // From MDV Skype: holdsat(nonintertial,I) :- holdsat(conditions),variable grounding.
+            atoms.add(new Blank(String.format(
+                "holdsat(%s, I) :- %s%s",
+                f.asVariablesToString(f.getParameterVariables()),
+                conditions,
+                this.__generateVariableTypeGroundingRules(", ", fluent_type_map, conditions_type_map)
+            )));
+        }
+        
+        return atoms.toArray(new Atom[] {});
+    }
 	
 	/**
 	 * @FIXME We shouldn't have an extra event description for events that are already violations.
