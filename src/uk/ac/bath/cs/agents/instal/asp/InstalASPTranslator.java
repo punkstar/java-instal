@@ -11,6 +11,7 @@ import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
+import uk.ac.bath.cs.agents.instal.NoninertialFluent;
 import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Terminates;
 
@@ -30,6 +31,7 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents);
     abstract protected Atom[] _generateDissolutionEventRules(DissolutionEvent[] events);
     abstract protected Atom[] _generateObligations(Obligation[] obligations);
+    abstract protected Atom[] _generateNoninertialRules(NoninertialFluent[] noninertials);
     
 	public InstalASPTranslator(Institution instal_spec, Domain domain) {
 	    this._instal = instal_spec;
@@ -68,17 +70,9 @@ public abstract class InstalASPTranslator {
         }
         
         this._addDivider();
-        this._addComment("Initial insitution fluents..");
+        this._addComment("Fluent definitions..");
         this._addComment();
         for(Atom a: this._generateInitiallyFluents(this._instal.getInitiallyFluents())) {
-            this._addItem(a);
-        }
-
-        // TODO Remove this.. domain files don't contain initially fluents
-        this._addDivider();
-        this._addComment("Initial domain fluents..");
-        this._addComment();
-        for(Atom a: this._generateInitiallyFluents(this._domain.getInitiallyFluents())) {
             this._addItem(a);
         }
         
@@ -110,10 +104,6 @@ public abstract class InstalASPTranslator {
         
         this._addDivider();
         this._addComment("Creation rules..");
-        for (Atom a: this._generateCreateEventRules(this._instal.getCreationEvents(), this._domain.getInitiallyFluents())) {
-            this._addItem(a);
-        }
-
         for (Atom a: this._generateCreateEventRules(this._instal.getCreationEvents(), this._instal.getInitiallyFluents())) {
             this._addItem(a);
         }
@@ -127,6 +117,12 @@ public abstract class InstalASPTranslator {
         this._addDivider();
         this._addComment("Obligations..");
         for (Atom a: this._generateObligations(this._instal.getObligations())) {
+            this._addItem(a);
+        }
+        
+        this._addDivider();
+        this._addComment("Non-inertial fluents..");
+        for (Atom a: this._generateNoninertialRules(this._instal.getNoninertialFluents())) {
             this._addItem(a);
         }
         
