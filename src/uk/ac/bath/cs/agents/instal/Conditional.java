@@ -14,8 +14,13 @@ public abstract class Conditional extends Atom implements Cloneable {
 	}
 	
 	public Conditional condition(boolean condition, Fluent f, String ... params) {
-		this._conditions.add(new Condition(condition, f));
+	    Condition c = new Condition(condition, f);
+	    
+	    c.setVariables(params);
+	    
+		this._conditions.add(c);
 		this._conditionsVariables.add(params);
+		
 		return this;
 	}
 	
@@ -23,7 +28,7 @@ public abstract class Conditional extends Atom implements Cloneable {
 		return this.condition(true, f, params);
 	}
 	
-    protected String _conditionsToString() {
+    public String _conditionsToString() {
     	if (this._conditions.size() > 0) {
             return "if " + this.__join(this._conditions, this._conditionsVariables, ", ");
     	} else {
