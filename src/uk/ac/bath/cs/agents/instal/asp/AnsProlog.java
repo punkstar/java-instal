@@ -47,11 +47,11 @@ public class AnsProlog extends InstalASPTranslator {
 	        StringBuilder fluent_name = new StringBuilder();
 	        
 	        if (fluent.getFluent().getType() == Fluent.TYPE_PERMISSION) {
-	            fluent_name.append("perm(").append(fluent.getFluent().getName()).append(")");
+	            fluent_name.append(fluent.toString());
 	        } else if (fluent.getFluent().getType() == Fluent.TYPE_POWER) {
-	            fluent_name.append("pow(").append(this._instal.getName()).append(",").append(fluent.getFluent().getName()).append(")");
+	            fluent_name.append(fluent.toString()).insert(4, this._instal.getName() + ",");
 	        } else {
-	            fluent_name.append(fluent.getFluent().getName());
+	            fluent_name.append(fluent.toString());
 	        }
 	        
             if (fluent.hasUngroundedVariables()) {
