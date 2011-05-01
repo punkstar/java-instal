@@ -44,16 +44,22 @@ public class AnsProlog extends InstalASPTranslator {
 	    for (int i = 0; i < fluents.length; i++) {
 	        InitiallyFluent fluent = fluents[i];
 	        
-	        if (fluent.getFluent().getType() == Fluent.TYPE_PERMISSION || fluent.getFluent().getType() == Fluent.TYPE_POWER) {
-	            if (fluent.hasUngroundedVariables()) {
-                    Hashtable<String, Type> type_map = fluent.getUngroundedVariableTypeMap();
-                    atoms[i] = new Blank(String.format("ifluent(%s) :- %s.", fluent.toString(), this.__generateVariableTypeGroundingRules("", type_map)));	            
-	            } else {
-	                atoms[i] = new Blank(String.format("ifluent(%s).", fluent.toString())); 
-	            }
+	        StringBuilder fluent_name = new StringBuilder();
+	        
+	        if (fluent.getFluent().getType() == Fluent.TYPE_PERMISSION) {
+	            fluent_name.append("perm(").append(fluent.getFluent().getName()).append(")");
+	        } else if (fluent.getFluent().getType() == Fluent.TYPE_POWER) {
+	            fluent_name.append("pow(").append(this._instal.getName()).append(",").append(fluent.getFluent().getName()).append(")");
 	        } else {
-	            atoms[i] = new Blank(String.format("ifluent(%s).", fluent.toString()));  
+	            fluent_name.append(fluent.getFluent().getName());
 	        }
+	        
+            if (fluent.hasUngroundedVariables()) {
+                Hashtable<String, Type> type_map = fluent.getUngroundedVariableTypeMap();
+                atoms[i] = new Blank(String.format("ifluent(%s) :- %s.", fluent_name, this.__generateVariableTypeGroundingRules("", type_map)));	            
+            } else {
+                atoms[i] = new Blank(String.format("ifluent(%s).", fluent_name)); 
+            }
 	    }
 	    
 	    if (atoms.length > 0) {
