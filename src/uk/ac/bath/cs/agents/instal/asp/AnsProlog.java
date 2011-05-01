@@ -105,15 +105,33 @@ public class AnsProlog extends InstalASPTranslator {
             
             atoms.add(new Comment(String.format("Event: %s (Type: %s)", e.getName().toString(), this.__eventTypeAbbr(e.getType()))));
             
-            atoms.add(new Blank(String.format("event(%s).", e.getName().toString())));
-            atoms.add(new Blank(String.format("evtype(%s, %s).", e.getName().toString(), this.__eventTypeAbbr(e.getType()))));
-            // @FIXME This is evil and breaks encapsulation
-            atoms.add(new Blank(String.format("evinst(%s, %s).", e.getName().toString(), this._instal.getName())));
+            // Get some random variables for the type restirction variables
+            String[] variables = new String[e.getParameters().size()];
+            for (int j = 0; j < e.getParameters().size(); j++) {
+                variables[j] = String.valueOf(((char) (65 + j)));
+            }
             
-            atoms.add(new Blank(String.format("event(viol(%s)).", e.getName().toString())));
-            atoms.add(new Blank(String.format("evtype(viol(%s), %s).", e.getName().toString(), this.__eventTypeAbbr(Event.TYPE_VIOLATION))));
+            Hashtable<String, Type> typemap = e.getParameterVariablesTypeMap(variables);
+            
+            // The grounding is where we infer types on the variables of the head
+            StringBuilder grounding = new StringBuilder(this.__generateVariableTypeGroundingRules(", ", typemap));
+            if (grounding.length() > 0) {
+                // Remove the trailing ', '
+                grounding.delete(grounding.length() - 2, grounding.length());
+                
+                // Add a ' :- ' to the begining of the grounding operation
+                grounding.insert(0, " :- ");
+            }
+            
+            atoms.add(new Blank(String.format("event(%s%s)%s.", e.getName().toString(), e.getVariablesWithParenthesisToString(variables), grounding)));
+            atoms.add(new Blank(String.format("evtype(%s%s, %s)%s.", e.getName().toString(), e.getVariablesWithParenthesisToString(variables), this.__eventTypeAbbr(e.getType()), grounding)));
             // @FIXME This is evil and breaks encapsulation
-            atoms.add(new Blank(String.format("evinst(viol(%s), %s).", e.getName().toString(), this._instal.getName())));
+            atoms.add(new Blank(String.format("evinst(%s%s, %s)%s.", e.getName().toString(), e.getVariablesWithParenthesisToString(variables), this._instal.getName(), grounding)));
+            
+            atoms.add(new Blank(String.format("event(viol(%s%s))%s.", e.getName().toString(), e.getVariablesWithParenthesisToString(variables), grounding)));
+            atoms.add(new Blank(String.format("evtype(viol(%s%s), %s)%s.", e.getName().toString(), e.getVariablesWithParenthesisToString(variables), this.__eventTypeAbbr(Event.TYPE_VIOLATION), grounding)));
+            // @FIXME This is evil and breaks encapsulation
+            atoms.add(new Blank(String.format("evinst(viol(%s%s), %s)%s.", e.getName().toString(), e.getVariablesWithParenthesisToString(variables), this._instal.getName(), grounding)));
         }
     
         return atoms.toArray(new Atom[] {});
