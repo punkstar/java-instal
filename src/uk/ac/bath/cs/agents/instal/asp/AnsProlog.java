@@ -88,12 +88,19 @@ public class AnsProlog extends InstalASPTranslator {
             }
             
             // From MDV Skype: holdsat(nonintertial,I) :- holdsat(conditions),variable grounding.
-            atoms.add(new Blank(String.format(
+            String rule = String.format(
                 "holdsat(%s, I) :- %s%s",
                 f.asVariablesToString(f.getParameterVariables()),
                 conditions,
                 this.__generateVariableTypeGroundingRules(", ", fluent_type_map, conditions_type_map)
-            )));
+            );
+            
+            // A quick fix for erroneous rules
+            if (rule.endsWith(", ")) {
+                rule = rule.substring(0, rule.length() - 2)  + ".";
+            }
+            
+            atoms.add(new Blank(rule));
         }
         
         return atoms.toArray(new Atom[] {});
