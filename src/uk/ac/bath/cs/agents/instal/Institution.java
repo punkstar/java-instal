@@ -18,17 +18,31 @@ public class Institution implements Serializable {
     protected ArrayList<Obligation> _obligations = new ArrayList<Obligation>();
     protected ArrayList<NoninertialFluent> _noninertials = new ArrayList<NoninertialFluent>();
 	
-	public Institution(String name, int time_steps) {
+	public Institution(String name) {
 	    this.setName(name);
-	    this.setTimesteps(time_steps);
+	}
+	
+	
+	/**
+	 * @deprecated
+	 * @param name
+	 * @param timesteps
+	 */
+	public Institution(String name, int timesteps) {
+	    this(name);
 	}
 	
 	public void setName(String name) {
 	    this._name = name;
 	}
 	
+	/**
+	 * @deprecated
+	 * @param steps
+	 */
 	public void setTimesteps(int steps) {
-	    this._timeSteps = steps;
+	    // Should no longer be used as time steps are handled at a different
+	    // level in the tool chain
 	}
 	
 	public Institution type(Type t) {
@@ -131,8 +145,12 @@ public class Institution implements Serializable {
 	    return this._noninertials.toArray(new NoninertialFluent[] {});
 	}
 	
+	/**
+	 * @deprecated
+	 * @return
+	 */
 	public int getTimeSteps() {
-	    return this._timeSteps;
+	    return 1;
 	}
 	
 	public String toString() {
