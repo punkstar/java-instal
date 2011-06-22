@@ -126,21 +126,6 @@ public abstract class InstalASPTranslator {
             this._addItem(a);
         }
         
-        this._addDivider();
-        this._addComment("Timesteps..");
-        this._addComment();
-        for (Atom a: this._generateTimeSteps(this._instal.getTimeSteps())) {
-            this._addItem(a);
-        }
-        
-        this._addDivider();
-        this._addComment("Kick everything off.. (this is a hack atm)");
-        this._addComment();
-        
-        if (this._instal.getCreationEvents().length > 0) {
-            this._addItem(new Blank(String.format("occurred(%s, i00).", this._instal.getCreationEvents()[0].getName())));
-        }
-        
         return this;
 	}
 	
