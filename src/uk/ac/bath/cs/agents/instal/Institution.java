@@ -17,6 +17,7 @@ public class Institution implements Serializable {
     protected ArrayList<InitiallyFluent> _initially = new ArrayList<InitiallyFluent>();
     protected ArrayList<Obligation> _obligations = new ArrayList<Obligation>();
     protected ArrayList<NoninertialFluent> _noninertials = new ArrayList<NoninertialFluent>();
+    protected ArrayList<AlwaysWhen> _noninertialRules = new ArrayList<AlwaysWhen>();
 	
 	public Institution(String name) {
 	    this.setName(name);
@@ -79,6 +80,10 @@ public class Institution implements Serializable {
 	
 	public Institution noninertial(NoninertialFluent f) {
 	    this._noninertials.add(f); return this;
+	}
+	
+	public Institution alwayswhen(AlwaysWhen aw) {
+	    this._noninertialRules.add(aw); return this;
 	}
 	
 	public String getName() {
@@ -145,6 +150,10 @@ public class Institution implements Serializable {
 	    return this._noninertials.toArray(new NoninertialFluent[] {});
 	}
 	
+	public AlwaysWhen[] getNoninertialRules() {
+        return this._noninertialRules.toArray(new AlwaysWhen[] {});
+	}
+	
 	/**
 	 * @deprecated
 	 * @return
@@ -153,6 +162,9 @@ public class Institution implements Serializable {
 	    return 1;
 	}
 	
+	/**
+	 * @deprecated
+	 */
 	public String toString() {
 		String output = "";
 		

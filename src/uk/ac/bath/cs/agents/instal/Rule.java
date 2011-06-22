@@ -94,7 +94,7 @@ public abstract class Rule extends Conditional {
 	}
 	
 	public String _getSourceEventWithVariables() {
-		return this.getSourceEvent().asVariablesToString(this._sourceEventVariables);
+		return this.getSourceEvent().asVariablesToString(this.getSourceEventVariables());
 	}
     
     private String __join(AbstractCollection<Parameters> s, AbstractCollection<String[]> v, String delimiter) {
