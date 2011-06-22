@@ -7,7 +7,22 @@ public class AlwaysWhen extends Rule {
     
     public AlwaysWhen(NoninertialFluent nf, String[] args) {
         super(null, args, 0, 0);
+        this.result(nf, args);
     }
+    
+    /**
+     * @deprecated
+     * @param f
+     * @return
+     */
+    public AlwaysWhen result(Fluent f, String[] args) {return this;}
+    
+    /**
+     * @deprecated
+     * @param f
+     * @return
+     */
+    public AlwaysWhen result(Fluent f) { return this; }
     
     /**
      * We hi-jack this to use our noninertial fluent instead of a variable.

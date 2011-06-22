@@ -8,6 +8,8 @@ public class Condition implements Cloneable, Serializable {
     protected String[] _variables;
     
     public Condition(boolean condition, Fluent f) {
+        assert f != null : "Fluent is null";
+        
         this._condition = condition;
         this._fluent = f;
     }

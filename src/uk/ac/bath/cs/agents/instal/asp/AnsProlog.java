@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import uk.ac.bath.cs.agents.instal.AlwaysWhen;
 import uk.ac.bath.cs.agents.instal.Condition;
 import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.DissolutionEvent;
@@ -470,6 +471,15 @@ public class AnsProlog extends InstalASPTranslator {
                 type_map_resolved
             )));
         }
+        
+        return atoms.toArray(new Atom [] {});
+    }
+    
+    protected Atom[] _generateNoninertialRules(AlwaysWhen[] noninertialRules) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+        
+        // @TODO Implement the translation
+        atoms.add(new Comment("Implement me"));
         
         return atoms.toArray(new Atom [] {});
     }
