@@ -26,7 +26,6 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateInitiateRules(Initiates[] rules);
     abstract protected Atom[] _generateTerminateRules(Terminates[] rules);
     abstract protected Atom[] _generateGenerateRules(Generates[] rules);
-    abstract protected Atom[] _generateTimeSteps(int timesteps);
     abstract protected Atom[] _generateConcreteTypes(Domain d);
     abstract protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents);
     abstract protected Atom[] _generateDissolutionEventRules(DissolutionEvent[] events);
