@@ -7,7 +7,9 @@ public class AlwaysWhen extends Rule {
     
     public AlwaysWhen(NoninertialFluent nf, String[] args) {
         super(null, args, 0, 0);
-        this.result(nf, args);
+        this._nf = nf;
+        this.args = args;
+        super.result(nf, args);
     }
     
     /**
