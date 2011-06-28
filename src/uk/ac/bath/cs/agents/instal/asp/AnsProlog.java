@@ -29,7 +29,7 @@ public class AnsProlog extends InstalASPTranslator {
 	
 	public AnsProlog generate() {
 	    this._addDivider();
-        this._addComment("Engine: AnsProlog, Nick Jones <nj210@bath.ac.uk>");
+        this._addComment("Engine: AnsProlog, Nick Jones <nick@nicksays.co.uk>");
         this._addDivider();
         return (AnsProlog) super.generate();
 	}
