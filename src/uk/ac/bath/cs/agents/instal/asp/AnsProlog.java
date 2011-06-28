@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 
+import uk.ac.bath.cs.agents.instal.AlwaysWhen;
 import uk.ac.bath.cs.agents.instal.Condition;
+import uk.ac.bath.cs.agents.instal.Conditional;
 import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
@@ -469,6 +471,42 @@ public class AnsProlog extends InstalASPTranslator {
                 before,
                 type_map_resolved
             )));
+        }
+        
+        return atoms.toArray(new Atom [] {});
+    }
+    
+    protected Atom[] _generateNoninertialRules(AlwaysWhen[] noninertialRules) {
+        ArrayList<Atom> atoms = new ArrayList<Atom>();
+        
+        for (AlwaysWhen always_when : noninertialRules) {
+            atoms.add(new Comment("Translation of (generate InstAL preview)."));
+
+            // There should only be one result, but we'll loop anyway.
+            for (Parameters rule: always_when.getResultAtoms()) {
+
+                // Generate our type map for grounding
+                String type_map = this.__generateVariableTypeGroundingRules(", ", always_when.getConditionalVariablesTypeMap(), always_when.getResultAtomsTypeMap());
+                
+                StringBuilder conditions = new StringBuilder();
+                
+                // Find the conditions and build holdsats
+                for (Condition condition : always_when.getConditions()) {
+                    conditions.append("holdsat(")
+                              .append(condition.asVariablesToStringWithCondition(condition.getVariables()))
+                              .append(", I), ");
+                }
+                
+                // Build our ASP
+                atoms.add(new Blank(
+                    String.format(
+                        "holdsat(%s, I) :- if %s%sinstant(I).",
+                        always_when._getSourceEventWithVariables(),
+                        conditions.toString(),
+                        type_map
+                    )
+                ));
+            }
         }
         
         return atoms.toArray(new Atom [] {});

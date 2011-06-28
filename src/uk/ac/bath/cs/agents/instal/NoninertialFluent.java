@@ -1,13 +1,13 @@
 package uk.ac.bath.cs.agents.instal;
 
-public class NoninertialFluent extends Parameters {
+public class NoninertialFluent extends Fluent {
     public static final int NONINERT_MAIN = 2;
     public static final int NONINERT_CONDITIONS = 3;
     
     private NoninertialConditions _conditions;
     
 	public NoninertialFluent(String name, String ... variables) {
-		super(name, Atom.ATOM_NONINERTIAL, NoninertialFluent.NONINERT_MAIN);
+		super(name, Atom.ATOM_NONINERTIAL);
 		
 		this.setParameterVariables(variables);
 		this._conditions = new NoninertialConditions(this);

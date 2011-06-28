@@ -3,6 +3,7 @@ package uk.ac.bath.cs.agents.instal.asp;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import uk.ac.bath.cs.agents.instal.AlwaysWhen;
 import uk.ac.bath.cs.agents.instal.CreationEvent;
 import uk.ac.bath.cs.agents.instal.DissolutionEvent;
 import uk.ac.bath.cs.agents.instal.Domain;
@@ -11,7 +12,6 @@ import uk.ac.bath.cs.agents.instal.Generates;
 import uk.ac.bath.cs.agents.instal.InitiallyFluent;
 import uk.ac.bath.cs.agents.instal.Initiates;
 import uk.ac.bath.cs.agents.instal.Institution;
-import uk.ac.bath.cs.agents.instal.NoninertialFluent;
 import uk.ac.bath.cs.agents.instal.Obligation;
 import uk.ac.bath.cs.agents.instal.Terminates;
 
@@ -30,7 +30,7 @@ public abstract class InstalASPTranslator {
     abstract protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents);
     abstract protected Atom[] _generateDissolutionEventRules(DissolutionEvent[] events);
     abstract protected Atom[] _generateObligations(Obligation[] obligations);
-    abstract protected Atom[] _generateNoninertialRules(NoninertialFluent[] noninertials);
+    abstract protected Atom[] _generateNoninertialRules(AlwaysWhen[] noninertialRules);
     
 	public InstalASPTranslator(Institution instal_spec, Domain domain) {
 	    this._instal = instal_spec;
@@ -121,7 +121,7 @@ public abstract class InstalASPTranslator {
         
         this._addDivider();
         this._addComment("Non-inertial fluents..");
-        for (Atom a: this._generateNoninertialRules(this._instal.getNoninertialFluents())) {
+        for (Atom a: this._generateNoninertialRules(this._instal.getNoninertialRules())) {
             this._addItem(a);
         }
         
