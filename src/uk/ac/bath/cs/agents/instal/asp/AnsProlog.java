@@ -361,25 +361,35 @@ public class AnsProlog extends InstalASPTranslator {
     
     protected Atom[] _generateCreateEventRules(CreationEvent[] events, InitiallyFluent[] fluents) {
         ArrayList<Atom> atoms = new ArrayList<Atom>();
-        
-        for(InitiallyFluent f: fluents) {
-            atoms.add(new Comment(""));
-            atoms.add(new Comment(String.format("Initiation of %s for creation events", f.toString())));
-            Hashtable<String, Type> type_map = new Hashtable<String, Type>();
             
-            if (f.hasUngroundedVariables()) {
-                type_map = f.getUngroundedVariableTypeMap();
+        for(CreationEvent e: events) {
+            // For each event, build up a possible set of variables, then a type map
+            int counter = 0;
+            Hashtable<String, Type> event_type_map = new Hashtable<String, Type>();
+            ArrayList<Type> parameters = e.getParameters();
+            Iterator<Type> iter = parameters.iterator();
+            while (iter.hasNext()) {
+                Type t = iter.next();
+                event_type_map.put(String.format("VAR_%02d", counter++), t);
             }
             
-            for(CreationEvent e: events) {
-                // For each event, build up a possible set of variables, then a type map
-                int counter = 0;
-                Hashtable<String, Type> event_type_map = new Hashtable<String, Type>();
-                ArrayList<Type> parameters = e.getParameters();
-                Iterator<Type> iter = parameters.iterator();
-                while (iter.hasNext()) {
-                    Type t = iter.next();
-                    event_type_map.put(String.format("VAR_%02d", counter++), t);
+            atoms.add(
+                new Blank(String.format(
+                    "initiated(live(%s), I) :- occurred(%s, I), not holdsat(live(%s), I), %sinstant(I).",
+                    this._instal.getName(),
+                    e.asVariablesToString(event_type_map.keySet().toArray(new String[] {})),
+                    this._instal.getName(),
+                    this.__generateVariableTypeGroundingRules(", ", event_type_map)
+                ))
+            );
+                
+            for(InitiallyFluent f: fluents) {
+                atoms.add(new Comment(""));
+                atoms.add(new Comment(String.format("Initiation of %s for creation events", f.toString())));
+                Hashtable<String, Type> type_map = new Hashtable<String, Type>();
+                
+                if (f.hasUngroundedVariables()) {
+                    type_map = f.getUngroundedVariableTypeMap();
                 }
                 
                 atoms.add(
